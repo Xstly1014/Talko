@@ -9,6 +9,7 @@ import (
 	_ "image/png"
 	"io"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -38,7 +39,17 @@ func (s *Server) sendProfile(w http.ResponseWriter, r *http.Request, id string, 
 	if e = s.DB.QueryRowContext(r.Context(), "SELECT COUNT(*) FROM follows WHERE follower_id=?", id).Scan(&following); e != nil {
 		return e
 	}
-	writeJSON(w, 200, map[string]any{"id": id, "nickname": nick, "bio": bio, "avatar_id": avatar, "email": email, "followers": followers, "following": following})
+	result := map[string]any{"id": id, "nickname": nick, "bio": bio, "avatar_id": avatar, "email": email, "followers": followers, "following": following}
+	if private {
+		var cid, nickname, bio, avatar, status, reason string
+		e = s.DB.QueryRowContext(r.Context(), "SELECT id,nickname,bio,COALESCE(avatar_id,''),status,reason FROM profile_changes WHERE user_id=? ORDER BY created_at DESC,id DESC LIMIT 1", id).Scan(&cid, &nickname, &bio, &avatar, &status, &reason)
+		if e == nil {
+			result["profile_change"] = map[string]string{"id": cid, "nickname": nickname, "bio": bio, "avatar_id": avatar, "status": status, "reason": reason}
+		} else if e != sql.ErrNoRows {
+			return e
+		}
+	}
+	writeJSON(w, 200, result)
 	return nil
 }
 func (s *Server) profile(w http.ResponseWriter, r *http.Request) error {
@@ -65,13 +76,42 @@ func (s *Server) profile(w http.ResponseWriter, r *http.Request) error {
 			return bad("头像不存在或不属于当前用户")
 		}
 	}
-	_, e = s.DB.ExecContext(r.Context(), "UPDATE users SET nickname=?,bio=?,avatar_id=NULLIF(?,'') WHERE id=?", in.Nickname, in.Bio, in.AvatarID, id)
+	tx, e := s.DB.BeginTx(r.Context(), nil)
 	if e != nil {
 		return e
 	}
-	writeJSON(w, 200, map[string]bool{"ok": true})
+	defer tx.Rollback()
+	var lock string
+	if e = tx.QueryRowContext(r.Context(), "SELECT id FROM users WHERE id=? FOR UPDATE", id).Scan(&lock); e != nil {
+		return e
+	}
+	_, e = tx.ExecContext(r.Context(), "UPDATE review_tasks t JOIN profile_changes p ON p.id=t.target_id SET t.status='cancelled' WHERE t.kind='profile' AND p.user_id=? AND t.status='pending'", id)
+	if e != nil {
+		return e
+	}
+	_, e = tx.ExecContext(r.Context(), "UPDATE profile_changes SET status='superseded' WHERE user_id=? AND status='pending'", id)
+	if e != nil {
+		return e
+	}
+	change, task := store.ID(), store.ID()
+	_, e = tx.ExecContext(r.Context(), "INSERT INTO profile_changes(id,user_id,nickname,bio,avatar_id) VALUES(?,?,?,?,NULLIF(?,''))", change, id, in.Nickname, in.Bio, in.AvatarID)
+	if e != nil {
+		return e
+	}
+	_, e = tx.ExecContext(r.Context(), "INSERT INTO review_tasks(id,kind,target_id,author_id) VALUES(?,'profile',?,?)", task, change, id)
+	if e != nil {
+		return e
+	}
+	if e = store.Event(r.Context(), tx, "review_requested", id, map[string]string{"task_id": task}); e != nil {
+		return e
+	}
+	if e = tx.Commit(); e != nil {
+		return e
+	}
+	writeJSON(w, 202, map[string]string{"id": change, "task_id": task, "status": "pending"})
 	return nil
 }
+
 func (s *Server) upload(w http.ResponseWriter, r *http.Request) error {
 	user, e := s.auth(r)
 	if e != nil {
@@ -207,7 +247,15 @@ func (s *Server) comments(w http.ResponseWriter, r *http.Request) error {
 		return e
 	}
 	user := s.optional(r)
-	rows, e := s.DB.QueryContext(r.Context(), "SELECT c.id,c.author_id,u.nickname,c.body,c.status,c.created_at FROM comments c JOIN users u ON u.id=c.author_id WHERE c.post_id=? AND (c.status='published' OR (c.author_id=? AND c.status='pending')) ORDER BY c.created_at DESC LIMIT 100", r.PathValue("id"), user)
+	page := 1
+	if v := r.URL.Query().Get("page"); v != "" {
+		n, err := strconv.Atoi(v)
+		if err != nil || n < 1 || n > 100000 {
+			return bad("页码无效")
+		}
+		page = n
+	}
+	rows, e := s.DB.QueryContext(r.Context(), "SELECT c.id,c.author_id,u.nickname,c.body,c.status,c.created_at FROM comments c JOIN users u ON u.id=c.author_id WHERE c.post_id=? AND (c.status='published' OR (c.author_id=? AND c.status='pending')) ORDER BY c.created_at DESC,c.id DESC LIMIT 41 OFFSET ?", r.PathValue("id"), user, (page-1)*40)
 	if e != nil {
 		return e
 	}
@@ -224,7 +272,11 @@ func (s *Server) comments(w http.ResponseWriter, r *http.Request) error {
 	if e = rows.Err(); e != nil {
 		return e
 	}
-	writeJSON(w, 200, map[string]any{"items": items})
+	more := len(items) > 40
+	if more {
+		items = items[:40]
+	}
+	writeJSON(w, 200, map[string]any{"items": items, "page": page, "has_more": more})
 	return nil
 }
 func (s *Server) deleteComment(w http.ResponseWriter, r *http.Request) error {
@@ -232,13 +284,27 @@ func (s *Server) deleteComment(w http.ResponseWriter, r *http.Request) error {
 	if e != nil {
 		return e
 	}
-	res, e := s.DB.ExecContext(r.Context(), "UPDATE comments SET status='deleted' WHERE id=? AND author_id=?", r.PathValue("id"), user)
+	var post string
+	if e = s.DB.QueryRowContext(r.Context(), "SELECT post_id FROM comments WHERE id=? AND author_id=?", r.PathValue("id"), user).Scan(&post); e != nil {
+		return missing()
+	}
+	tx, e := s.DB.BeginTx(r.Context(), nil)
 	if e != nil {
 		return e
 	}
-	n, _ := res.RowsAffected()
-	if n == 0 {
-		return missing()
+	defer tx.Rollback()
+	var lock string
+	if e = tx.QueryRowContext(r.Context(), "SELECT id FROM posts WHERE id=? FOR UPDATE", post).Scan(&lock); e != nil {
+		return e
+	}
+	if _, e = tx.ExecContext(r.Context(), "UPDATE comments SET status='deleted' WHERE id=? AND author_id=?", r.PathValue("id"), user); e != nil {
+		return e
+	}
+	if _, e = tx.ExecContext(r.Context(), "UPDATE review_tasks SET status='cancelled' WHERE kind='comment' AND target_id=? AND status='pending'", r.PathValue("id")); e != nil {
+		return e
+	}
+	if e = tx.Commit(); e != nil {
+		return e
 	}
 	writeJSON(w, 200, map[string]bool{"ok": true})
 	return nil
@@ -323,9 +389,16 @@ func (s *Server) report(w http.ResponseWriter, r *http.Request) error {
 	if n > 0 {
 		return conflict("已有待处理举报，请勿重复提交")
 	}
+	var revision string
+	if e = tx.QueryRowContext(r.Context(), "SELECT r.id FROM posts p JOIN revisions r ON r.id=p.published_revision_id WHERE p.id=? AND "+publicWhere()+" FOR SHARE", r.PathValue("id")).Scan(&revision); e != nil {
+		return missing()
+	}
 	id := store.ID()
 	_, e = tx.ExecContext(r.Context(), "INSERT INTO reports(id,user_id,post_id,reason) VALUES(?,?,?,?)", id, user, r.PathValue("id"), in.Reason)
 	if e != nil {
+		return e
+	}
+	if _, e = tx.ExecContext(r.Context(), "INSERT INTO report_evidence(report_id,revision_id) VALUES(?,?)", id, revision); e != nil {
 		return e
 	}
 	if e = store.Event(r.Context(), tx, "report_submitted", r.PathValue("id"), map[string]string{"report_id": id}); e != nil {
@@ -338,10 +411,10 @@ func (s *Server) report(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 func (s *Server) reports(w http.ResponseWriter, r *http.Request) error {
-	return s.privateRows(w, r, "SELECT id,post_id,reason,status,result,created_at FROM reports WHERE user_id=? ORDER BY created_at DESC LIMIT 100")
+	return s.privateRows(w, r, "SELECT id,post_id,reason,status,result,created_at FROM reports WHERE user_id=? ORDER BY created_at DESC")
 }
 func (s *Server) appeals(w http.ResponseWriter, r *http.Request) error {
-	return s.privateRows(w, r, "SELECT id,task_id,reason,status,created_at FROM appeals WHERE user_id=? ORDER BY created_at DESC LIMIT 100")
+	return s.privateRows(w, r, "SELECT a.id,a.task_id,a.reason,a.status,a.created_at,c.reason AS result,c.action FROM appeals a LEFT JOIN case_resolutions c ON c.case_id=a.id AND c.kind='appeal' WHERE a.user_id=? ORDER BY a.created_at DESC")
 }
 func (s *Server) notifications(w http.ResponseWriter, r *http.Request) error {
 	return s.privateRows(w, r, "SELECT id,message,post_id,read_at,created_at FROM notifications WHERE user_id=? ORDER BY created_at DESC LIMIT 100")
@@ -351,7 +424,15 @@ func (s *Server) privateRows(w http.ResponseWriter, r *http.Request, q string) e
 	if e != nil {
 		return e
 	}
-	rows, e := s.DB.QueryContext(r.Context(), q, user)
+	page := 1
+	if v := r.URL.Query().Get("page"); v != "" {
+		n, err := strconv.Atoi(v)
+		if err != nil || n < 1 || n > 100000 {
+			return bad("页码无效")
+		}
+		page = n
+	}
+	rows, e := s.DB.QueryContext(r.Context(), q+" LIMIT ? OFFSET ?", user, 41, (page-1)*40)
 	if e != nil {
 		return e
 	}
@@ -382,7 +463,11 @@ func (s *Server) privateRows(w http.ResponseWriter, r *http.Request, q string) e
 	if e = rows.Err(); e != nil {
 		return e
 	}
-	writeJSON(w, 200, map[string]any{"items": items})
+	more := len(items) > 40
+	if more {
+		items = items[:40]
+	}
+	writeJSON(w, 200, map[string]any{"items": items, "page": page, "has_more": more})
 	return nil
 }
 func (s *Server) readNotification(w http.ResponseWriter, r *http.Request) error {

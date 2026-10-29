@@ -124,7 +124,10 @@ func (s *Server) Routes() http.Handler {
 		"PUT /api/v1/posts/{id}/reactions/{kind}": s.react, "DELETE /api/v1/posts/{id}/reactions/{kind}": s.react,
 		"PUT /api/v1/users/{id}/follow": s.follow, "DELETE /api/v1/users/{id}/follow": s.follow,
 		"POST /api/v1/posts/{id}/reports": s.report, "GET /api/v1/me/reports": s.reports, "POST /api/v1/appeals": s.appeal, "GET /api/v1/me/appeals": s.appeals,
-		"GET /api/v1/notifications": s.notifications, "POST /api/v1/notifications/{id}/read": s.readNotification,
+		"POST /api/v1/comments/{id}/reports": s.reportComment,
+		"GET /api/v1/me/comment-reports":     s.commentReports,
+		"GET /api/v1/me/review-decisions":    s.myReviews,
+		"GET /api/v1/notifications":          s.notifications, "POST /api/v1/notifications/{id}/read": s.readNotification,
 	}
 	for p, h := range routes {
 		m.HandleFunc(p, s.wrap(h))
@@ -257,9 +260,18 @@ func (s *Server) register(w http.ResponseWriter, r *http.Request) error {
 		return bad("验证码错误")
 	}
 	id := store.ID()
-	_, e = tx.ExecContext(r.Context(), "INSERT INTO users(id,email,nickname,password_hash) VALUES(?,?,?,?)", id, in.Email, in.Nickname, hash)
+	_, e = tx.ExecContext(r.Context(), "INSERT INTO users(id,email,nickname,password_hash) VALUES(?,?,?,?)", id, in.Email, "新同学", hash)
 	if e != nil {
 		return conflict("此邮箱已注册")
+	}
+	change, task := store.ID(), store.ID()
+	_, e = tx.ExecContext(r.Context(), "INSERT INTO profile_changes(id,user_id,nickname,bio) VALUES(?,?,?,'')", change, id, in.Nickname)
+	if e != nil {
+		return e
+	}
+	_, e = tx.ExecContext(r.Context(), "INSERT INTO review_tasks(id,kind,target_id,author_id) VALUES(?,'profile',?,?)", task, change, id)
+	if e != nil {
+		return e
 	}
 	_, e = tx.ExecContext(r.Context(), "DELETE FROM email_codes WHERE email=?", in.Email)
 	if e != nil {

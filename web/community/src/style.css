@@ -842,3 +842,56 @@ legend {
     white-space: nowrap;
   }
 }
+
+.record-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 20px 0;
+}
+.record-tabs a {
+  padding: 8px 15px;
+  background: white;
+  border: 1px solid #e2eaf5;
+  border-radius: 8px;
+  color: #5d7493;
+}
+.record-tabs a.selected {
+  background: #edf4ff;
+  border-color: #b8d2fb;
+  color: #3370ff;
+}
+.pagination {
+  justify-content: flex-end;
+  margin: 25px 0;
+}
+.pagination > span {
+  margin-right: auto;
+  color: #64748b;
+}
+
+.report-dialog {
+  border: 1px solid #dde7f5;
+  border-radius: 16px;
+  padding: 30px;
+  width: min(500px, calc(100vw - 30px));
+  color: #263b55;
+  box-shadow: 0 22px 90px #13244b30;
+}
+.report-dialog::backdrop {
+  background: #162a4c60;
+  backdrop-filter: blur(3px);
+}
+.report-dialog h2 {
+  margin-top: 0;
+}
+.report-dialog p {
+  line-height: 1.8;
+}
+.report-dialog textarea {
+  width: 100%;
+}
+.report-dialog .toolbar {
+  justify-content: flex-end;
+  margin-top: 22px;
+}

@@ -28,6 +28,7 @@ export function Card({ post: p }: { post: Post }) {
           {p.risk_disclosure && (
             <div className="risk-label">信息来源未核实，请谨慎甄别</div>
           )}
+          {p.advertising && <span className="tag">广告</span>}
           <h3>{p.title}</h3>
         </div>
       </Link>

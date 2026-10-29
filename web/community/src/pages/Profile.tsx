@@ -5,31 +5,40 @@ import { useParams } from "react-router-dom";
 import { api, send, type User, type Post } from "../api";
 import { useAuth } from "../state/auth";
 import { useData } from "../state/useData";
-import { Feedback, Avatar, Require } from "../components/ui";
+import { Feedback, Avatar, Require, status } from "../components/ui";
 
 export function Profile() {
   const { user, refresh } = useAuth();
   const [nick, setNick] = useState(user?.nickname || ""),
     [bio, setBio] = useState(user?.bio || ""),
     [avatar, setAvatar] = useState(user?.avatar_id || ""),
-    [message, msg] = useState("");
+    [message, msg] = useState(""),
+    [busy, setBusy] = useState(false);
   useEffect(() => {
     if (user) {
-      setNick(user.nickname);
-      setBio(user.bio);
-      setAvatar(user.avatar_id);
+      setNick(user.profile_change?.nickname || user.nickname);
+      setBio(user.profile_change?.bio ?? user.bio);
+      setAvatar(user.profile_change?.avatar_id ?? user.avatar_id);
     }
   }, [user]);
   return (
     <Require>
       <div className="page-heading">
         <h1>个人资料</h1>
-        <p>让社区认识你。</p>
+        <p>资料修改须通过审核，审核期间原公开资料保持展示。</p>
+        {user?.profile_change && (
+          <div className="risk">
+            最近资料状态：{status(user.profile_change.status)}　
+            {user.profile_change.reason}
+          </div>
+        )}
       </div>
       <form
         className="panel narrow"
         onSubmit={async (e) => {
           e.preventDefault();
+          setBusy(true);
+          msg("");
           try {
             await send(
               "/me/profile",
@@ -37,9 +46,11 @@ export function Profile() {
               "PATCH",
             );
             await refresh();
-            msg("资料已保存");
+            msg("资料已提交审核，通过后替换公开资料。");
           } catch (e) {
             msg((e as Error).message);
+          } finally {
+            setBusy(false);
           }
         }}
       >
@@ -82,7 +93,9 @@ export function Profile() {
           />
         </label>
         <p>{message}</p>
-        <button className="primary">保存资料</button>
+        <button className="primary" disabled={busy}>
+          {busy ? "正在提交…" : "提交资料审核"}
+        </button>
         <p className="fine">{user?.email} · 已验证邮箱</p>
       </form>
     </Require>

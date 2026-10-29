@@ -1,0 +1,133 @@
+?   	github.com/Xstly1014/Talko/cmd/community	[no test files]
+?   	github.com/Xstly1014/Talko/cmd/devmail	[no test files]
+?   	github.com/Xstly1014/Talko/cmd/moderate	[no test files]
+?   	github.com/Xstly1014/Talko/cmd/review	[no test files]
+=== RUN   TestLifecycleMySQL
+2026/10/29 12:35:06 INFO request request_id=ca6850b083b60499eb07c80ada409322 method=POST path=/api/v1/auth/email-code duration_ms=9
+2026/10/29 12:35:06 INFO request request_id=0cd8da18b574bcb422c8ece83a8a9609 method=POST path=/api/v1/auth/register duration_ms=170
+2026/10/29 12:35:06 INFO request request_id=9b010e296790e6eb09263f3aedb43a4d method=POST path=/api/v1/auth/email-code duration_ms=7
+2026/10/29 12:35:06 INFO request request_id=1ea8c2498051100b2057a01021396dcc method=POST path=/api/v1/auth/register duration_ms=220
+=== RUN   TestLifecycleMySQL/create_idempotency_and_private_draft
+2026/10/29 12:35:06 INFO request request_id=795bfd0c8da7450620fff7bc8b61087e method=POST path=/api/v1/posts duration_ms=8
+2026/10/29 12:35:06 INFO request request_id=76897e2d6262f132b10781eb6ee23f54 method=POST path=/api/v1/posts duration_ms=1
+2026/10/29 12:35:06 INFO request request_id=49cfd12c2538f38f1032c199288b0139 method=GET path=/api/v1/posts/cab3dea0b80e6ca7a8c91dac31c9e144 duration_ms=0
+2026/10/29 12:35:06 INFO request request_id=b1e91ffc0cce67c0f0dc78bbe3dfa9ac method=GET path=/api/v1/posts/cab3dea0b80e6ca7a8c91dac31c9e144 duration_ms=50
+=== RUN   TestLifecycleMySQL/follow_before_publication
+2026/10/29 12:35:06 INFO request request_id=630d719f340daa9cc2a876b3440af160 method=PUT path=/api/v1/users/276b2ca45be270955ded7b28a720fe65/follow duration_ms=10
+=== RUN   TestLifecycleMySQL/submit_and_self_review_denied
+2026/10/29 12:35:06 INFO request request_id=c551e75dd3083d8d7ca9067f4b95d98d method=POST path=/api/v1/posts/cab3dea0b80e6ca7a8c91dac31c9e144/submit duration_ms=11
+=== RUN   TestLifecycleMySQL/public_and_distributed_feed
+2026/10/29 12:35:07 INFO request request_id=e80fb0630dacd2b2739c76d0579850ea method=GET path=/api/v1/posts/cab3dea0b80e6ca7a8c91dac31c9e144 duration_ms=1
+2026/10/29 12:35:07 INFO request request_id=539b328d11170b460af7bae1cfb2f999 method=GET path=/api/v1/feed duration_ms=1
+=== RUN   TestLifecycleMySQL/pending_comment_visibility_and_moderation
+2026/10/29 12:35:07 INFO request request_id=c5284969a77414137793a64faf37cd5a method=POST path=/api/v1/posts/cab3dea0b80e6ca7a8c91dac31c9e144/comments duration_ms=9
+2026/10/29 12:35:07 INFO request request_id=3c01c2fa869639150260db71446c5c67 method=GET path=/api/v1/posts/cab3dea0b80e6ca7a8c91dac31c9e144/comments duration_ms=0
+2026/10/29 12:35:07 INFO request request_id=331621b367c2fe61089df2c343681fd5 method=GET path=/api/v1/posts/cab3dea0b80e6ca7a8c91dac31c9e144/comments duration_ms=0
+=== RUN   TestLifecycleMySQL/withdraw_blocks_stale_decision
+2026/10/29 12:35:07 INFO request request_id=06e6f5637ba571fc8845f69d723efefc method=PATCH path=/api/v1/posts/cab3dea0b80e6ca7a8c91dac31c9e144/draft duration_ms=7
+2026/10/29 12:35:07 INFO request request_id=02be51913d21893f243d138f5c2ce1f3 method=POST path=/api/v1/posts/cab3dea0b80e6ca7a8c91dac31c9e144/submit duration_ms=9
+2026/10/29 12:35:07 INFO request request_id=58eec0ae43aa82f5058aa0834f9652b7 method=POST path=/api/v1/posts/cab3dea0b80e6ca7a8c91dac31c9e144/withdraw duration_ms=7
+2026/10/29 12:35:07 INFO request request_id=08f2cb0ed6ed5d803cc2cfa0ba2c4c47 method=GET path=/api/v1/posts/cab3dea0b80e6ca7a8c91dac31c9e144 duration_ms=1
+=== RUN   TestLifecycleMySQL/report_hide_and_filter_every_public_read
+2026/10/29 12:35:07 INFO request request_id=82f8fa9852be027f6529e37c3a1e461d method=POST path=/api/v1/posts/cab3dea0b80e6ca7a8c91dac31c9e144/reports duration_ms=9
+2026/10/29 12:35:07 INFO request request_id=0763218b2eb2acb9cdc37e0091f3c8dc method=POST path=/api/v1/posts/cab3dea0b80e6ca7a8c91dac31c9e144/reports duration_ms=2
+2026/10/29 12:35:07 INFO request request_id=a6cbfec1caec1ce851706bb9e51a69f7 method=GET path=/api/v1/posts/cab3dea0b80e6ca7a8c91dac31c9e144 duration_ms=0
+2026/10/29 12:35:07 INFO request request_id=5c1fe14c6a13b257c83c40b964a22120 method=GET path=/api/v1/feed duration_ms=0
+2026/10/29 12:35:07 INFO request request_id=945e5460f57ee48a0386a58a42f9e3a1 method=GET path=/api/v1/posts/cab3dea0b80e6ca7a8c91dac31c9e144/comments duration_ms=0
+=== RUN   TestLifecycleMySQL/media_private_until_review_and_hidden_after_removal
+2026/10/29 12:35:07 INFO request request_id=3ac830f080f9f7d4fe57c641427f79b0 method=POST path=/api/v1/media duration_ms=8
+2026/10/29 12:35:07 INFO request request_id=148f6bd7f06b6ea9e14a44dafa936dbc method=GET path=/api/v1/media/9dbc940222304961dfcce4f0566f2d1a duration_ms=1
+2026/10/29 12:35:07 INFO request request_id=471f0347bcfde1ff1889a962574344ff method=POST path=/api/v1/posts duration_ms=6
+2026/10/29 12:35:07 INFO request request_id=f0183c654498dcafd255eb005e8a5aea method=POST path=/api/v1/posts/4021f7ecf073befdc9e97be860ea1ff8/submit duration_ms=18
+2026/10/29 12:35:07 INFO request request_id=c14141c9935082486f5a2b0512c132da method=GET path=/api/v1/media/9dbc940222304961dfcce4f0566f2d1a duration_ms=1
+2026/10/29 12:35:07 INFO request request_id=c73bb6140437f0b467bf2ad6142d05fd method=DELETE path=/api/v1/posts/4021f7ecf073befdc9e97be860ea1ff8 duration_ms=58
+2026/10/29 12:35:07 INFO request request_id=c2e61383938610647114db2f11d892de method=GET path=/api/v1/media/9dbc940222304961dfcce4f0566f2d1a duration_ms=2
+=== RUN   TestLifecycleMySQL/expired_opportunity_hidden_and_risk_disclosure_present
+2026/10/29 12:35:07 INFO request request_id=fd0de711e8b9e344998921d6a119ef90 method=POST path=/api/v1/posts duration_ms=9
+2026/10/29 12:35:07 INFO request request_id=dec62e6c35cb125d61b0cc3110f394a7 method=POST path=/api/v1/posts/bac4038ef83af6104e1505241ae0d4bb/submit duration_ms=58
+2026/10/29 12:35:07 INFO request request_id=64ad15d148a8d1c785823d754d43f495 method=GET path=/api/v1/posts/bac4038ef83af6104e1505241ae0d4bb duration_ms=2
+2026/10/29 12:35:07 INFO request request_id=c72263cd013d02390dd4a6f640d052ec method=GET path=/api/v1/posts/bac4038ef83af6104e1505241ae0d4bb duration_ms=1
+=== RUN   TestLifecycleMySQL/origin_and_unknown_fields
+2026/10/29 12:35:07 INFO request request_id=cd062abe14f7daa5bdffae38829a4cfb method=POST path=/api/v1/auth/login duration_ms=0
+--- PASS: TestLifecycleMySQL (1.26s)
+    --- PASS: TestLifecycleMySQL/create_idempotency_and_private_draft (0.06s)
+    --- PASS: TestLifecycleMySQL/follow_before_publication (0.01s)
+    --- PASS: TestLifecycleMySQL/submit_and_self_review_denied (0.48s)
+    --- PASS: TestLifecycleMySQL/public_and_distributed_feed (0.00s)
+    --- PASS: TestLifecycleMySQL/pending_comment_visibility_and_moderation (0.02s)
+    --- PASS: TestLifecycleMySQL/withdraw_blocks_stale_decision (0.03s)
+    --- PASS: TestLifecycleMySQL/report_hide_and_filter_every_public_read (0.02s)
+    --- PASS: TestLifecycleMySQL/media_private_until_review_and_hidden_after_removal (0.11s)
+    --- PASS: TestLifecycleMySQL/expired_opportunity_hidden_and_risk_disclosure_present (0.09s)
+    --- PASS: TestLifecycleMySQL/origin_and_unknown_fields (0.00s)
+=== RUN   TestDraftRules
+--- PASS: TestDraftRules (0.00s)
+PASS
+ok  	github.com/Xstly1014/Talko/internal/community	1.811s
+?   	github.com/Xstly1014/Talko/internal/moderation	[no test files]
+=== RUN   TestReviewBoundaryAndGovernance
+=== RUN   TestReviewBoundaryAndGovernance/session_separation_and_role_authorization
+=== RUN   TestReviewBoundaryAndGovernance/claim_conflict_and_audited_decision
+2026/10/29 12:35:07 INFO request request_id=eff0122ea5c5face65affb27cefc9cf4 method=POST path=/api/v1/posts duration_ms=9
+2026/10/29 12:35:07 INFO request request_id=480563618d9e97c27d6547d945991f6d method=POST path=/api/v1/posts/0d5ef81470a486775fefc6e8e222f1bf/submit duration_ms=51
+2026/10/29 12:35:07 INFO request request_id=7c2b70ef0b3ef18c914e5fbcc7d519b1 method=GET path=/api/v1/posts/0d5ef81470a486775fefc6e8e222f1bf duration_ms=1
+=== RUN   TestReviewBoundaryAndGovernance/profile_changes_not_public_until_approved
+2026/10/29 12:35:07 INFO request request_id=062dff3a13ff095d8294f55852f5770e method=PATCH path=/api/v1/me/profile duration_ms=8
+2026/10/29 12:35:07 INFO request request_id=58f8fd0313779cc5ddb2ac53e1fa76b7 method=GET path=/api/v1/users/3c7020890084f6ff638b0bad5a15650c duration_ms=1
+2026/10/29 12:35:07 INFO request request_id=ceaae9a7fdd11eeb96db8dc41c4d2667 method=GET path=/api/v1/users/3c7020890084f6ff638b0bad5a15650c duration_ms=1
+=== RUN   TestReviewBoundaryAndGovernance/superseded_profile_version_cannot_publish
+2026/10/29 12:35:07 INFO request request_id=a543c33d10a6bda6b2e6b247a139b4bc method=PATCH path=/api/v1/me/profile duration_ms=8
+2026/10/29 12:35:07 INFO request request_id=6bdd9e9505b7c17aa3330b94f5ecf9a2 method=PATCH path=/api/v1/me/profile duration_ms=7
+=== RUN   TestReviewBoundaryAndGovernance/comment_report_to_hide_closed_loop
+2026/10/29 12:35:07 INFO request request_id=382c5ce2eee65ad5011962ccd1bba20a method=POST path=/api/v1/posts/0d5ef81470a486775fefc6e8e222f1bf/comments duration_ms=56
+2026/10/29 12:35:08 INFO request request_id=300a32a0c6b03652e6deef1553192b96 method=POST path=/api/v1/comments/bdc774a2dcec51d77e0b1ee8b83a718d/reports duration_ms=59
+2026/10/29 12:35:08 INFO request request_id=59874788ef3a8e16c4427b35dfbe87c9 method=POST path=/api/v1/comments/bdc774a2dcec51d77e0b1ee8b83a718d/reports duration_ms=2
+2026/10/29 12:35:08 INFO request request_id=0f057913ed77e07f14cb83206d460516 method=GET path=/api/v1/posts/0d5ef81470a486775fefc6e8e222f1bf/comments duration_ms=0
+=== RUN   TestReviewBoundaryAndGovernance/report_evidence_is_immutable_revision
+2026/10/29 12:35:08 INFO request request_id=6f540cdbd37f388c4e8d4b7a2e967ecd method=POST path=/api/v1/posts/0d5ef81470a486775fefc6e8e222f1bf/reports duration_ms=11
+2026/10/29 12:35:08 INFO request request_id=3fc173d56f871b77d972e71bbcab76ed method=PATCH path=/api/v1/posts/0d5ef81470a486775fefc6e8e222f1bf/draft duration_ms=6
+2026/10/29 12:35:08 INFO request request_id=cb2e5b67f2c03059d4d8791063e2093f method=POST path=/api/v1/posts/0d5ef81470a486775fefc6e8e222f1bf/submit duration_ms=8
+=== RUN   TestReviewBoundaryAndGovernance/appeal_reopens_fresh_task_preserving_original_decision
+2026/10/29 12:35:08 INFO request request_id=2d40bb943a07ebebf0a9f76eee88c4bc method=POST path=/api/v1/posts duration_ms=7
+2026/10/29 12:35:08 INFO request request_id=044b39f2ea5207a9cf2a0f46d927b956 method=POST path=/api/v1/posts/d5fabb7680b07f9bd761d6f4b8355c2f/submit duration_ms=8
+2026/10/29 12:35:08 INFO request request_id=3ef2718f43051da3ddeb957e038bafc6 method=POST path=/api/v1/appeals duration_ms=51
+2026/10/29 12:35:08 INFO request request_id=d8cf3ac61a381161a5f56d2a056284a0 method=GET path=/api/v1/posts/d5fabb7680b07f9bd761d6f4b8355c2f duration_ms=0
+2026/10/29 12:35:08 INFO request request_id=def815b2cd0c00c7f97195361f14c19a method=GET path=/api/v1/posts/d5fabb7680b07f9bd761d6f4b8355c2f duration_ms=41
+2026/10/29 12:35:08 INFO request request_id=b6e3c486e99a1b50ec9dd9b1af7028b2 method=GET path=/api/v1/me/appeals duration_ms=0
+=== RUN   TestReviewBoundaryAndGovernance/superseded_content_cannot_reopen_on_appeal
+2026/10/29 12:35:08 INFO request request_id=348cd4c47e0087cabbd1a1ea6ce2c7cc method=POST path=/api/v1/posts duration_ms=8
+2026/10/29 12:35:08 INFO request request_id=b5cb6a260b283e69a1c8f631e57e37f9 method=POST path=/api/v1/posts/cda55c626c2c8597a034b4c00b6632fa/submit duration_ms=6
+2026/10/29 12:35:08 INFO request request_id=9d7352ba071f75aa360aaa04ddb42047 method=PATCH path=/api/v1/posts/cda55c626c2c8597a034b4c00b6632fa/draft duration_ms=50
+2026/10/29 12:35:08 INFO request request_id=d0693606d3faf8a64f7ea59b537e278c method=POST path=/api/v1/appeals duration_ms=6
+=== RUN   TestReviewBoundaryAndGovernance/expired_claim_and_deleted_comment_cannot_decide
+2026/10/29 12:35:08 INFO request request_id=8c0115cdf6fa09cbcdd02111e0fa09cf method=POST path=/api/v1/posts/0d5ef81470a486775fefc6e8e222f1bf/comments duration_ms=64
+2026/10/29 12:35:09 INFO request request_id=17b4f81ae789036aefa28705f4f66390 method=DELETE path=/api/v1/comments/3a849787fff15995e69519f5249c3f37 duration_ms=58
+=== RUN   TestReviewBoundaryAndGovernance/bounded_list_pagination
+2026/10/29 12:35:09 INFO request request_id=6c7a1fc969af63032b48687f8d3050a4 method=GET path=/api/v1/notifications duration_ms=0
+=== RUN   TestReviewBoundaryAndGovernance/expired_opportunity_cannot_approve
+2026/10/29 12:35:09 INFO request request_id=2b28d4794449ba4e4543670817adadc2 method=POST path=/api/v1/posts duration_ms=9
+2026/10/29 12:35:09 INFO request request_id=75a3406d1468c6c17595b79620a84901 method=POST path=/api/v1/posts/10d8b4d1daf2455605e49048035c7a7e/submit duration_ms=13
+=== RUN   TestReviewBoundaryAndGovernance/deleting_parent_cancels_pending_comment_tasks
+2026/10/29 12:35:09 INFO request request_id=1f965b392fde3e947205d35bc78ed088 method=POST path=/api/v1/posts/0d5ef81470a486775fefc6e8e222f1bf/comments duration_ms=6
+2026/10/29 12:35:09 INFO request request_id=2572d7d09070595182891695f041de9e method=DELETE path=/api/v1/posts/0d5ef81470a486775fefc6e8e222f1bf duration_ms=8
+=== RUN   TestReviewBoundaryAndGovernance/disabled_staff_session_revoked_immediately
+=== RUN   TestReviewBoundaryAndGovernance/foreign_origin_denied
+--- PASS: TestReviewBoundaryAndGovernance (2.90s)
+    --- PASS: TestReviewBoundaryAndGovernance/session_separation_and_role_authorization (0.00s)
+    --- PASS: TestReviewBoundaryAndGovernance/claim_conflict_and_audited_decision (0.20s)
+    --- PASS: TestReviewBoundaryAndGovernance/profile_changes_not_public_until_approved (0.13s)
+    --- PASS: TestReviewBoundaryAndGovernance/superseded_profile_version_cannot_publish (0.07s)
+    --- PASS: TestReviewBoundaryAndGovernance/comment_report_to_hide_closed_loop (0.20s)
+    --- PASS: TestReviewBoundaryAndGovernance/report_evidence_is_immutable_revision (0.10s)
+    --- PASS: TestReviewBoundaryAndGovernance/appeal_reopens_fresh_task_preserving_original_decision (0.60s)
+    --- PASS: TestReviewBoundaryAndGovernance/superseded_content_cannot_reopen_on_appeal (0.15s)
+    --- PASS: TestReviewBoundaryAndGovernance/expired_claim_and_deleted_comment_cannot_decide (0.14s)
+    --- PASS: TestReviewBoundaryAndGovernance/bounded_list_pagination (0.00s)
+    --- PASS: TestReviewBoundaryAndGovernance/expired_opportunity_cannot_approve (0.14s)
+    --- PASS: TestReviewBoundaryAndGovernance/deleting_parent_cancels_pending_comment_tasks (0.02s)
+    --- PASS: TestReviewBoundaryAndGovernance/disabled_staff_session_revoked_immediately (0.06s)
+    --- PASS: TestReviewBoundaryAndGovernance/foreign_origin_denied (0.00s)
+PASS
+ok  	github.com/Xstly1014/Talko/internal/review	3.480s
+?   	github.com/Xstly1014/Talko/internal/store	[no test files]
+?   	github.com/Xstly1014/Talko/internal/worker	[no test files]

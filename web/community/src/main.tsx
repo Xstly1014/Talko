@@ -156,6 +156,14 @@ function Shell() {
           />
           <Route path="/reports" element={<Records type="reports" />} />
           <Route path="/appeals" element={<Records type="appeals" />} />
+          <Route
+            path="/comment-reports"
+            element={<Records type="comment-reports" />}
+          />
+          <Route
+            path="/review-decisions"
+            element={<Records type="review-decisions" />}
+          />
           <Route path="/help" element={<Help />} />
           <Route path="*" element={<Empty title="页面不存在" />} />
         </Routes>

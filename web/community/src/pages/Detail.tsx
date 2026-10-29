@@ -1,3 +1,4 @@
+import { ReportDialog } from "../components/ReportDialog";
 import React, { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Heart, Bookmark, Flag, ChevronRight } from "lucide-react";
@@ -10,12 +11,22 @@ export function Detail() {
   const { id } = useParams(),
     { user } = useAuth();
   const { data: p, error, loading, reload } = useData<Post>("/posts/" + id);
-  const { data: comments, reload: reloadComments } = useData<{ items: any[] }>(
-    "/posts/" + id + "/comments",
+  const [commentPage, setCommentPage] = useState(1);
+  const {
+    data: comments,
+    error: commentError,
+    loading: commentLoading,
+    reload: reloadComments,
+  } = useData<{ items: any[]; has_more: boolean }>(
+    "/posts/" + id + "/comments?page=" + commentPage,
   );
   const [body, setBody] = useState(""),
     [failure, fail] = useState(""),
-    [busy, setBusy] = useState(false);
+    [busy, setBusy] = useState(false),
+    [reportTarget, setReportTarget] = useState<{
+      path: string;
+      title: string;
+    } | null>(null);
   if (!p) return <Feedback error={error} loading={loading} />;
   async function act(f: () => Promise<unknown>) {
     fail("");
@@ -28,6 +39,9 @@ export function Detail() {
   }
   return (
     <>
+      {reportTarget && (
+        <ReportDialog {...reportTarget} onClose={() => setReportTarget(null)} />
+      )}
       <div className="detail-layout">
         <article className="panel detail">
           <div className="author-row">
@@ -55,6 +69,7 @@ export function Detail() {
             ))}
           </div>
           <span className="tag">{p.category}</span>
+          {p.advertising && <span className="tag">广告</span>}
           <h1>{p.title}</h1>
           <p className="post-body">{p.body}</p>
           {p.opportunity && (
@@ -114,15 +129,12 @@ export function Detail() {
             </button>
             <button
               disabled={!user}
-              onClick={() => {
-                const reason = prompt("请说明举报原因（至少 5 字）");
-                if (reason)
-                  void act(() =>
-                    send("/posts/" + id + "/reports", { reason }).then(() =>
-                      alert("举报已提交，可在“我的举报”查看进度。"),
-                    ),
-                  );
-              }}
+              onClick={() =>
+                setReportTarget({
+                  path: "/posts/" + id + "/reports",
+                  title: "举报内容",
+                })
+              }
             >
               <Flag size={16} />
               举报
@@ -144,6 +156,7 @@ export function Detail() {
                     crypto.randomUUID(),
                   );
                   setBody("");
+                  setCommentPage(1);
                   reloadComments();
                 } catch (e) {
                   fail((e as Error).message);
@@ -165,6 +178,7 @@ export function Detail() {
               </button>
             </form>
           </Require>
+          <Feedback error={commentError} loading={commentLoading} />
           <div className="comments">
             {comments?.items.map((c) => (
               <div className="comment" key={c.id}>
@@ -175,12 +189,29 @@ export function Detail() {
                     <span className="tag">待审核，仅自己可见</span>
                   )}
                   <p>{c.body}</p>
+                  {user && c.status === "published" && (
+                    <button
+                      className="text"
+                      onClick={() =>
+                        setReportTarget({
+                          path: "/comments/" + c.id + "/reports",
+                          title: "举报评论",
+                        })
+                      }
+                    >
+                      举报评论
+                    </button>
+                  )}
                   {user?.id === c.author_id && (
                     <button
                       className="text"
                       onClick={async () => {
-                        await api("/comments/" + c.id, { method: "DELETE" });
-                        reloadComments();
+                        try {
+                          await api("/comments/" + c.id, { method: "DELETE" });
+                          reloadComments();
+                        } catch (e) {
+                          fail((e as Error).message);
+                        }
                       }}
                     >
                       删除
@@ -189,6 +220,24 @@ export function Detail() {
                 </div>
               </div>
             ))}
+          </div>
+          {!commentLoading && !commentError && !comments?.items.length && (
+            <p className="muted">还没有公开评论，欢迎分享你的看法。</p>
+          )}
+          <div className="toolbar pagination">
+            <span>评论第 {commentPage} 页</span>
+            <button
+              disabled={commentPage <= 1}
+              onClick={() => setCommentPage(commentPage - 1)}
+            >
+              上一页
+            </button>
+            <button
+              disabled={!comments?.has_more}
+              onClick={() => setCommentPage(commentPage + 1)}
+            >
+              下一页
+            </button>
           </div>
         </article>
         <aside className="panel guidance">

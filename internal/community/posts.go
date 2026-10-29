@@ -29,6 +29,7 @@ type Draft struct {
 	Opportunity *Opportunity `json:"opportunity"`
 }
 type Post struct {
+	Advertising    bool         `json:"advertising"`
 	ID             string       `json:"id"`
 	AuthorID       string       `json:"author_id"`
 	Author         string       `json:"author"`
@@ -77,6 +78,7 @@ func validDraft(d Draft) error {
 		if e != nil || !t.After(time.Now()) || t.After(time.Now().AddDate(0, 3, 0)) {
 			return bad("机会有效期须在未来 3 个月内")
 		}
+		o.ExpiresAt = t.UTC().Format(time.RFC3339)
 	}
 	return nil
 }
@@ -252,7 +254,7 @@ func (s *Server) submitPost(w http.ResponseWriter, r *http.Request) error {
 		return conflict("内容版本或状态已变化")
 	}
 	var task, taskStatus string
-	e = tx.QueryRowContext(r.Context(), "SELECT id,status FROM review_tasks WHERE target_id=?", rev.String).Scan(&task, &taskStatus)
+	e = tx.QueryRowContext(r.Context(), "SELECT id,status FROM review_tasks WHERE target_id=? ORDER BY created_at DESC,id DESC LIMIT 1", rev.String).Scan(&task, &taskStatus)
 	if e == nil {
 		if taskStatus != "pending" {
 			return conflict("该版本已处理，请修改后重新提交")
@@ -329,6 +331,9 @@ func (s *Server) changePost(w http.ResponseWriter, r *http.Request, del bool) er
 		}
 	}
 	if del {
+		if _, e = tx.ExecContext(r.Context(), "UPDATE review_tasks t JOIN comments c ON c.id=t.target_id SET t.status='cancelled' WHERE t.kind='comment' AND c.post_id=? AND t.status='pending'", r.PathValue("id")); e != nil {
+			return e
+		}
 		_, e = tx.ExecContext(r.Context(), "UPDATE posts SET status='deleted' WHERE id=?", r.PathValue("id"))
 		if e != nil {
 			return e
@@ -344,7 +349,7 @@ func (s *Server) changePost(w http.ResponseWriter, r *http.Request, del bool) er
 	return nil
 }
 
-const postSelect = "SELECT p.id,p.author_id,u.nickname,COALESCE(u.avatar_id,''),p.type,p.status,r.id,r.title,r.body,r.category,r.media_ids,r.opportunity,r.reason,p.published_at,COALESCE((SELECT id FROM review_tasks WHERE target_id=r.id),'') FROM posts p JOIN users u ON u.id=p.author_id JOIN revisions r ON r.id="
+const postSelect = "SELECT p.id,p.author_id,u.nickname,COALESCE(u.avatar_id,''),p.type,p.status,r.id,r.title,r.body,r.category,r.media_ids,r.opportunity,r.reason,p.published_at,COALESCE((SELECT id FROM review_tasks WHERE target_id=r.id ORDER BY created_at DESC,id DESC LIMIT 1),'') FROM posts p JOIN users u ON u.id=p.author_id JOIN revisions r ON r.id="
 
 func scanPost(row interface{ Scan(...any) error }) (Post, error) {
 	var p Post
@@ -410,6 +415,11 @@ func (s *Server) enrich(r *http.Request, p *Post, user string) error {
 	if e := s.DB.QueryRowContext(r.Context(), "SELECT COUNT(*) FROM reactions WHERE post_id=? AND kind='favorite'", p.ID).Scan(&p.Favorites); e != nil {
 		return e
 	}
+	var advertising bool
+	if e := s.DB.QueryRowContext(r.Context(), "SELECT COALESCE((SELECT is_advertising FROM content_disclosures WHERE post_id=?),FALSE)", p.ID).Scan(&advertising); e != nil {
+		return e
+	}
+	p.Advertising = advertising
 	if user != "" {
 		var a, b, c int
 		if e := s.DB.QueryRowContext(r.Context(), "SELECT EXISTS(SELECT 1 FROM reactions WHERE user_id=? AND post_id=? AND kind='like'),EXISTS(SELECT 1 FROM reactions WHERE user_id=? AND post_id=? AND kind='favorite'),EXISTS(SELECT 1 FROM follows WHERE follower_id=? AND followee_id=?)", user, p.ID, user, p.ID, user, p.AuthorID).Scan(&a, &b, &c); e != nil {

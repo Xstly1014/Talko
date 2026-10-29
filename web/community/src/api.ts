@@ -1,4 +1,12 @@
 export type User = {
+  profile_change?: {
+    id: string;
+    nickname: string;
+    bio: string;
+    avatar_id: string;
+    status: string;
+    reason: string;
+  };
   id: string;
   nickname: string;
   bio: string;
@@ -29,6 +37,7 @@ export type Post = {
   media_ids: string[];
   opportunity?: Opportunity;
   risk_disclosure?: string;
+  advertising?: boolean;
   reason: string;
   task_id: string;
   published_at: string | null;

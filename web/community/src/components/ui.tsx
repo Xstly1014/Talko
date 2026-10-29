@@ -87,6 +87,10 @@ export function status(s: string) {
         withdrawn: "已撤回",
         hidden: "已下架",
         resolved: "已处理",
+        approved: "已通过",
+        superseded: "已被新版本替代",
+        decided: "已处理",
+        cancelled: "已撤回",
       } as Record<string, string>
     )[s] || s
   );
