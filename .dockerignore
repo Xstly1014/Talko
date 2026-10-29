@@ -1,0 +1,5 @@
+.git
+.tmp
+web/community/node_modules
+web/community/dist
+.env

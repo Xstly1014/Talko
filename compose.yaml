@@ -1,0 +1,20 @@
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: talko
+      MYSQL_USER: talko
+      MYSQL_PASSWORD: talko_local
+      MYSQL_ROOT_PASSWORD: local_root_only
+    ports: ["127.0.0.1:3307:3306"]
+    volumes: [mysql-data:/var/lib/mysql]
+    healthcheck:
+      test: [CMD, mysqladmin, ping, -h, localhost]
+      interval: 3s
+      timeout: 3s
+      retries: 40
+  mailpit:
+    image: axllent/mailpit:v1.27
+    ports: ["127.0.0.1:1025:1025", "127.0.0.1:8025:8025"]
+volumes:
+  mysql-data:

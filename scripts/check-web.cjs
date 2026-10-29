@@ -1,0 +1,1 @@
+const cp=require('node:child_process'),path=require('node:path');const root=path.resolve(__dirname,'../web/community');for(const args of [['node_modules/typescript/bin/tsc','-b'],['node_modules/vite/bin/vite.js','build']]){const p=cp.spawnSync(process.execPath,args,{cwd:root,stdio:'inherit',windowsHide:true});if(p.status!==0)process.exit(p.status??1)}

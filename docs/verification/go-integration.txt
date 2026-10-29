@@ -1,0 +1,69 @@
+?   	github.com/Xstly1014/Talko/cmd/community	[no test files]
+?   	github.com/Xstly1014/Talko/cmd/devmail	[no test files]
+?   	github.com/Xstly1014/Talko/cmd/moderate	[no test files]
+=== RUN   TestLifecycleMySQL
+2026/10/29 11:45:41 INFO request request_id=52ea1497faf25ba40aed21b4b6e6f822 method=POST path=/api/v1/auth/email-code duration_ms=8
+2026/10/29 11:45:42 INFO request request_id=19963289dea660ab308dcb8f07c497fa method=POST path=/api/v1/auth/register duration_ms=160
+2026/10/29 11:45:42 INFO request request_id=6b2cb2e68e9733529154ce81634708fd method=POST path=/api/v1/auth/email-code duration_ms=8
+2026/10/29 11:45:42 INFO request request_id=7acf710b2ba35a8aee8c528d975887cf method=POST path=/api/v1/auth/register duration_ms=211
+=== RUN   TestLifecycleMySQL/create_idempotency_and_private_draft
+2026/10/29 11:45:42 INFO request request_id=2b7617254877fd00e5189782745a7e09 method=POST path=/api/v1/posts duration_ms=7
+2026/10/29 11:45:42 INFO request request_id=949c8a2202f9ed77aae38471c8c0f8c6 method=POST path=/api/v1/posts duration_ms=0
+2026/10/29 11:45:42 INFO request request_id=50721c8c2fcb84898b42106781e82365 method=GET path=/api/v1/posts/4c680c344e5aa3fff896af1bd6dff7db duration_ms=0
+2026/10/29 11:45:42 INFO request request_id=a3ce22dafbf4e290b354eeb3f9a8d3a8 method=GET path=/api/v1/posts/4c680c344e5aa3fff896af1bd6dff7db duration_ms=0
+=== RUN   TestLifecycleMySQL/follow_before_publication
+2026/10/29 11:45:42 INFO request request_id=48b492566fcad9cff7e5638c854c5d86 method=PUT path=/api/v1/users/909f478e0b7e572c89352018bf0bff86/follow duration_ms=6
+=== RUN   TestLifecycleMySQL/submit_and_self_review_denied
+2026/10/29 11:45:42 INFO request request_id=8d726a602fbc56d5f93e11fae68244f2 method=POST path=/api/v1/posts/4c680c344e5aa3fff896af1bd6dff7db/submit duration_ms=7
+=== RUN   TestLifecycleMySQL/public_and_distributed_feed
+2026/10/29 11:45:42 INFO request request_id=78bbca8546bea15a448364db430b9bca method=GET path=/api/v1/posts/4c680c344e5aa3fff896af1bd6dff7db duration_ms=1
+2026/10/29 11:45:42 INFO request request_id=6335734d2dce86bb4fb7337749fc6593 method=GET path=/api/v1/feed duration_ms=1
+=== RUN   TestLifecycleMySQL/pending_comment_visibility_and_moderation
+2026/10/29 11:45:42 INFO request request_id=0ee225f74b0b2d6e673ce3158a12cb08 method=POST path=/api/v1/posts/4c680c344e5aa3fff896af1bd6dff7db/comments duration_ms=8
+2026/10/29 11:45:42 INFO request request_id=12eac1cf80d2faf1331da9b9544e0d46 method=GET path=/api/v1/posts/4c680c344e5aa3fff896af1bd6dff7db/comments duration_ms=1
+2026/10/29 11:45:42 INFO request request_id=2a4c1dd8d4f0f9a798fa58c13d5c625b method=GET path=/api/v1/posts/4c680c344e5aa3fff896af1bd6dff7db/comments duration_ms=0
+=== RUN   TestLifecycleMySQL/withdraw_blocks_stale_decision
+2026/10/29 11:45:42 INFO request request_id=57b8c8e1263ac8fc74c884dba9396554 method=PATCH path=/api/v1/posts/4c680c344e5aa3fff896af1bd6dff7db/draft duration_ms=5
+2026/10/29 11:45:42 INFO request request_id=ec949bf837451ae48e98be5383a003f6 method=POST path=/api/v1/posts/4c680c344e5aa3fff896af1bd6dff7db/submit duration_ms=7
+2026/10/29 11:45:42 INFO request request_id=a8cfdd22c4dfa86f0185709b72b3546f method=POST path=/api/v1/posts/4c680c344e5aa3fff896af1bd6dff7db/withdraw duration_ms=58
+2026/10/29 11:45:42 INFO request request_id=c2352ab13de332ffc4edb5f45c9c8698 method=GET path=/api/v1/posts/4c680c344e5aa3fff896af1bd6dff7db duration_ms=1
+=== RUN   TestLifecycleMySQL/report_hide_and_filter_every_public_read
+2026/10/29 11:45:42 INFO request request_id=b1014369b4fb14bd5b8ac4e2efbbbcb1 method=POST path=/api/v1/posts/4c680c344e5aa3fff896af1bd6dff7db/reports duration_ms=8
+2026/10/29 11:45:42 INFO request request_id=3b8d0f62c1a94882488b768c5751d9f9 method=POST path=/api/v1/posts/4c680c344e5aa3fff896af1bd6dff7db/reports duration_ms=50
+2026/10/29 11:45:42 INFO request request_id=4f5dbdb08633a610bc503880f2917717 method=GET path=/api/v1/posts/4c680c344e5aa3fff896af1bd6dff7db duration_ms=0
+2026/10/29 11:45:42 INFO request request_id=28ba8e47bd5c45eb107757e36ebe3ce6 method=GET path=/api/v1/feed duration_ms=1
+2026/10/29 11:45:42 INFO request request_id=55c7a50d15402c7c831bd2a7609ff586 method=GET path=/api/v1/posts/4c680c344e5aa3fff896af1bd6dff7db/comments duration_ms=0
+=== RUN   TestLifecycleMySQL/media_private_until_review_and_hidden_after_removal
+2026/10/29 11:45:42 INFO request request_id=f25f8856102e962b14330b3d50bcfee2 method=POST path=/api/v1/media duration_ms=5
+2026/10/29 11:45:42 INFO request request_id=4371a4d03d54647dcb2c441022c96520 method=GET path=/api/v1/media/f1667cd64e9bad795c60b65aaf61b903 duration_ms=0
+2026/10/29 11:45:42 INFO request request_id=ab77279a6a99952ea063c4077a9d0be1 method=POST path=/api/v1/posts duration_ms=8
+2026/10/29 11:45:42 INFO request request_id=91e9ff11207bd8c9c4f1e6a2232f008a method=POST path=/api/v1/posts/10536621c2d6bbbeb2902e76c3f2f1b6/submit duration_ms=7
+2026/10/29 11:45:42 INFO request request_id=7cc244e84bee4300d181de79fd516cb8 method=GET path=/api/v1/media/f1667cd64e9bad795c60b65aaf61b903 duration_ms=0
+2026/10/29 11:45:42 INFO request request_id=7e94753e9289cb91de0409ca598fe860 method=DELETE path=/api/v1/posts/10536621c2d6bbbeb2902e76c3f2f1b6 duration_ms=9
+2026/10/29 11:45:42 INFO request request_id=f20ee5444c342d16b8092398320adaad method=GET path=/api/v1/media/f1667cd64e9bad795c60b65aaf61b903 duration_ms=2
+=== RUN   TestLifecycleMySQL/expired_opportunity_hidden_and_risk_disclosure_present
+2026/10/29 11:45:42 INFO request request_id=fd8624dab4b129bdefa13706a0bb8284 method=POST path=/api/v1/posts duration_ms=10
+2026/10/29 11:45:42 INFO request request_id=6a1f047c4f0d121b2410ce5bbcb70d20 method=POST path=/api/v1/posts/4c9e9f0d94c6fb624d4ce317231a8ee8/submit duration_ms=10
+2026/10/29 11:45:42 INFO request request_id=a99d0ffd9123778e224701c57071b08e method=GET path=/api/v1/posts/4c9e9f0d94c6fb624d4ce317231a8ee8 duration_ms=51
+2026/10/29 11:45:42 INFO request request_id=b43230620d17a2f04cf398503969968b method=GET path=/api/v1/posts/4c9e9f0d94c6fb624d4ce317231a8ee8 duration_ms=1
+=== RUN   TestLifecycleMySQL/origin_and_unknown_fields
+2026/10/29 11:45:42 INFO request request_id=3ca639d62526f7bcece7da42b7f377de method=POST path=/api/v1/auth/login duration_ms=0
+--- PASS: TestLifecycleMySQL (0.97s)
+    --- PASS: TestLifecycleMySQL/create_idempotency_and_private_draft (0.01s)
+    --- PASS: TestLifecycleMySQL/follow_before_publication (0.01s)
+    --- PASS: TestLifecycleMySQL/submit_and_self_review_denied (0.13s)
+    --- PASS: TestLifecycleMySQL/public_and_distributed_feed (0.00s)
+    --- PASS: TestLifecycleMySQL/pending_comment_visibility_and_moderation (0.02s)
+    --- PASS: TestLifecycleMySQL/withdraw_blocks_stale_decision (0.07s)
+    --- PASS: TestLifecycleMySQL/report_hide_and_filter_every_public_read (0.07s)
+    --- PASS: TestLifecycleMySQL/media_private_until_review_and_hidden_after_removal (0.09s)
+    --- PASS: TestLifecycleMySQL/expired_opportunity_hidden_and_risk_disclosure_present (0.09s)
+    --- PASS: TestLifecycleMySQL/origin_and_unknown_fields (0.00s)
+=== RUN   TestDraftRules
+--- PASS: TestDraftRules (0.00s)
+PASS
+ok  	github.com/Xstly1014/Talko/internal/community	1.474s
+?   	github.com/Xstly1014/Talko/internal/moderation	[no test files]
+?   	github.com/Xstly1014/Talko/internal/store	[no test files]
+?   	github.com/Xstly1014/Talko/internal/worker	[no test files]
+

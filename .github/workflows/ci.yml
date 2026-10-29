@@ -1,0 +1,36 @@
+name: community-ci
+on: [push, pull_request]
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_DATABASE: talko_test
+          MYSQL_ROOT_PASSWORD: ci_root
+        ports: ['3306:3306']
+        options: --health-cmd="mysqladmin ping -h localhost -pci_root" --health-interval=5s --health-timeout=5s --health-retries=30
+    env:
+      TEST_MYSQL_DSN: root:ci_root@tcp(127.0.0.1:3306)/talko_test?parseTime=true&multiStatements=true&charset=utf8mb4&loc=UTC
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - run: go test -count=1 -v ./...
+      - run: go vet ./...
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: web/community/package-lock.json
+      - run: npm ci
+        working-directory: web/community
+      - run: npm run build
+        working-directory: web/community
