@@ -41,7 +41,9 @@ func main() {
 		addr = "127.0.0.1:8080"
 	}
 	srv := &http.Server{Addr: addr, Handler: community.Config(db).Routes(), ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 15 * time.Second, WriteTimeout: 20 * time.Second, IdleTimeout: 60 * time.Second}
-	go worker.Run(ctx, db)
+	if os.Getenv("OUTBOX_WORKER") != "disabled" {
+		go worker.Run(ctx, db)
+	}
 	go func() {
 		<-ctx.Done()
 		c, cancel := context.WithTimeout(context.Background(), 10*time.Second)

@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/Xstly1014/Talko/internal/observability"
 	"github.com/Xstly1014/Talko/internal/store"
 	"golang.org/x/crypto/bcrypt"
 	"io"
@@ -70,7 +71,6 @@ func (s *Server) wrap(h handler) http.HandlerFunc {
 			}
 		}
 		r.Body = http.MaxBytesReader(w, r.Body, 6<<20)
-		start := time.Now()
 		if e := h(w, r); e != nil {
 			status := 500
 			code := "internal"
@@ -91,7 +91,6 @@ func (s *Server) wrap(h handler) http.HandlerFunc {
 			}
 			writeJSON(w, status, map[string]string{"code": code, "message": msg, "request_id": rid})
 		}
-		slog.Info("request", "request_id", rid, "method", r.Method, "path", r.URL.Path, "duration_ms", time.Since(start).Milliseconds())
 	}
 }
 func writeJSON(w http.ResponseWriter, status int, v any) {
@@ -113,8 +112,14 @@ func decode(r *http.Request, v any) error {
 }
 func (s *Server) Routes() http.Handler {
 	m := http.NewServeMux()
+	met := &observability.HTTPMetrics{}
+	m.HandleFunc("GET /metrics", func(w http.ResponseWriter, r *http.Request) {
+		if observability.Serve(s.DB, w, r) {
+			met.Write(w)
+		}
+	})
 	routes := map[string]handler{
-		"GET /healthz": s.health, "GET /readyz": s.ready, "GET /metrics": s.metrics,
+		"GET /healthz": s.health, "GET /readyz": s.ready,
 		"POST /api/v1/auth/email-code": s.emailCode, "POST /api/v1/auth/register": s.register, "POST /api/v1/auth/login": s.login, "POST /api/v1/auth/logout": s.logout,
 		"GET /api/v1/me": s.me, "PATCH /api/v1/me/profile": s.profile, "GET /api/v1/users/{id}": s.userProfile,
 		"POST /api/v1/media": s.upload, "GET /api/v1/media/{id}": s.media,
@@ -132,7 +137,7 @@ func (s *Server) Routes() http.Handler {
 	for p, h := range routes {
 		m.HandleFunc(p, s.wrap(h))
 	}
-	return m
+	return met.Wrap(m)
 }
 func (s *Server) health(w http.ResponseWriter, r *http.Request) error {
 	writeJSON(w, 200, map[string]string{"status": "ok"})
@@ -148,10 +153,7 @@ func (s *Server) ready(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 func (s *Server) metrics(w http.ResponseWriter, r *http.Request) error {
-	w.Header().Set("Content-Type", "text/plain; version=0.0.4")
-	var n int
-	_ = s.DB.QueryRowContext(r.Context(), "SELECT COUNT(*) FROM outbox WHERE processed_at IS NULL").Scan(&n)
-	fmt.Fprintf(w, "talko_http_requests_total %d\ntalko_http_failures_total %d\ntalko_outbox_pending %d\n", s.Requests.Load(), s.Failures.Load(), n)
+	observability.Serve(s.DB, w, r)
 	return nil
 }
 func (s *Server) auth(r *http.Request) (string, error) {

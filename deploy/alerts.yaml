@@ -1,0 +1,81 @@
+{
+  "groups": [
+    {
+      "name": "talko-business",
+      "rules": [
+        {
+          "alert": "TalkoMetricsUnavailable",
+          "expr": "up == 0",
+          "for": "1m",
+          "labels": {
+            "severity": "warning"
+          },
+          "annotations": {
+            "summary": "指标采集失败",
+            "runbook": "docs/runbooks/infrastructure.md"
+          }
+        },
+        {
+          "alert": "TalkoOutboxDelayed",
+          "expr": "talko_outbox_oldest_seconds > 120",
+          "for": "2m",
+          "labels": {
+            "severity": "warning"
+          },
+          "annotations": {
+            "summary": "异步事件积压",
+            "runbook": "docs/runbooks/infrastructure.md"
+          }
+        },
+        {
+          "alert": "TalkoDeadLetters",
+          "expr": "talko_outbox_dead > 0",
+          "for": "30s",
+          "labels": {
+            "severity": "warning"
+          },
+          "annotations": {
+            "summary": "存在死信",
+            "runbook": "docs/runbooks/infrastructure.md"
+          }
+        },
+        {
+          "alert": "TalkoReviewBacklog",
+          "expr": "talko_review_oldest_seconds > 86400",
+          "for": "5m",
+          "labels": {
+            "severity": "warning"
+          },
+          "annotations": {
+            "summary": "审核等待超过一天",
+            "runbook": "docs/runbooks/infrastructure.md"
+          }
+        },
+        {
+          "alert": "APIErrorRate",
+          "expr": "sum by(job) (rate(talko_http_requests_total{status=~\"5..\"}[5m])) / clamp_min(sum by(job) (rate(talko_http_requests_total[5m])), 0.001) > 0.05",
+          "for": "2m",
+          "labels": {
+            "severity": "warning"
+          },
+          "annotations": {
+            "summary": "接口 5xx 比例持续超过 5%，检查服务日志与数据库",
+            "runbook": "docs/runbooks/infrastructure.md"
+          }
+        },
+        {
+          "alert": "APILatency",
+          "expr": "histogram_quantile(0.95, sum by(job,le)(rate(talko_http_duration_seconds_bucket[5m]))) > 1",
+          "for": "5m",
+          "labels": {
+            "severity": "warning"
+          },
+          "annotations": {
+            "summary": "接口 P95 耗时持续超过 1 秒",
+            "runbook": "docs/runbooks/infrastructure.md"
+          }
+        }
+      ]
+    }
+  ]
+}

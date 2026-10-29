@@ -56,6 +56,10 @@ cmd/moderate 继续保留为需要数据库权限的受信任本地维护工具�
 
 测试脚本默认使用独立 talko_test 数据库；也可设置 TEST_MYSQL_DSN。未配置该环境变量时直接 go test 会明确跳过数据库测试，不得将跳过视为验收通过。测试记录见 docs/verification/go-integration-review.txt。
 
+## 部署与运维增量
+
+本机服务已加载新指标与 Outbox 可靠性代码。容器候选栈、飞书接入、发布回滚与备份恢复详见 [运维手册](docs/runbooks/infrastructure.md)；实际通过与待验收项见 [基础设施验收](docs/verification/infrastructure-acceptance.md)。Docker 服务端当前无法启动，不能将部署文件或 CI 定义视为已运行平台。
+
 ## 规格与实施范围
 
 - docs/spec/community：社区功能与交互规格。

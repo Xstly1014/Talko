@@ -1,0 +1,232 @@
+{
+  "name": "talko-staging",
+  "services": {
+    "mysql": {
+      "image": "mysql:8.4",
+      "environment": {
+        "MYSQL_DATABASE": "talko",
+        "MYSQL_USER": "talko",
+        "MYSQL_PASSWORD": "${MYSQL_PASSWORD:?required}",
+        "MYSQL_ROOT_PASSWORD": "${MYSQL_ROOT_PASSWORD:?required}"
+      },
+      "volumes": [
+        "mysql-data:/var/lib/mysql"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost"
+        ],
+        "interval": "5s",
+        "retries": 30
+      },
+      "restart": "unless-stopped"
+    },
+    "migrate": {
+      "image": "${IMAGE_PREFIX:-talko}/community:${RELEASE:-local}",
+      "build": {
+        "context": "..",
+        "args": {
+          "SERVICE": "community"
+        }
+      },
+      "command": [
+        "migrate"
+      ],
+      "environment": {
+        "MYSQL_DSN": "talko:${MYSQL_PASSWORD}@tcp(mysql:3306)/talko?parseTime=true&multiStatements=true&charset=utf8mb4&loc=UTC",
+        "APP_ENV": "staging",
+        "APP_ORIGIN": "http://localhost:5183",
+        "REVIEW_ORIGIN": "http://localhost:5184",
+        "HTTP_ADDR": "0.0.0.0:8080",
+        "REVIEW_ADDR": "0.0.0.0:8081",
+        "SMTP_ADDR": "mailpit:1025",
+        "SMTP_FROM": "noreply@talko.local",
+        "OUTBOX_WORKER": "disabled"
+      },
+      "depends_on": {
+        "mysql": {
+          "condition": "service_healthy"
+        }
+      }
+    },
+    "mailpit": {
+      "image": "axllent/mailpit:v1.27",
+      "ports": [
+        "127.0.0.1:8035:8025"
+      ]
+    },
+    "community": {
+      "image": "${IMAGE_PREFIX:-talko}/community:${RELEASE:-local}",
+      "build": {
+        "context": "..",
+        "args": {
+          "SERVICE": "community"
+        }
+      },
+      "environment": {
+        "MYSQL_DSN": "talko:${MYSQL_PASSWORD}@tcp(mysql:3306)/talko?parseTime=true&multiStatements=true&charset=utf8mb4&loc=UTC",
+        "APP_ENV": "staging",
+        "APP_ORIGIN": "http://localhost:5183",
+        "REVIEW_ORIGIN": "http://localhost:5184",
+        "HTTP_ADDR": "0.0.0.0:8080",
+        "REVIEW_ADDR": "0.0.0.0:8081",
+        "SMTP_ADDR": "mailpit:1025",
+        "SMTP_FROM": "noreply@talko.local",
+        "OUTBOX_WORKER": "disabled"
+      },
+      "depends_on": {
+        "migrate": {
+          "condition": "service_completed_successfully"
+        }
+      },
+      "restart": "unless-stopped",
+      "mem_limit": "512m"
+    },
+    "review": {
+      "image": "${IMAGE_PREFIX:-talko}/review:${RELEASE:-local}",
+      "build": {
+        "context": "..",
+        "args": {
+          "SERVICE": "review"
+        }
+      },
+      "environment": {
+        "MYSQL_DSN": "talko:${MYSQL_PASSWORD}@tcp(mysql:3306)/talko?parseTime=true&multiStatements=true&charset=utf8mb4&loc=UTC",
+        "APP_ENV": "staging",
+        "APP_ORIGIN": "http://localhost:5183",
+        "REVIEW_ORIGIN": "http://localhost:5184",
+        "HTTP_ADDR": "0.0.0.0:8080",
+        "REVIEW_ADDR": "0.0.0.0:8081",
+        "SMTP_ADDR": "mailpit:1025",
+        "SMTP_FROM": "noreply@talko.local",
+        "OUTBOX_WORKER": "disabled"
+      },
+      "depends_on": {
+        "migrate": {
+          "condition": "service_completed_successfully"
+        }
+      },
+      "restart": "unless-stopped",
+      "mem_limit": "512m"
+    },
+    "worker": {
+      "image": "${IMAGE_PREFIX:-talko}/worker:${RELEASE:-local}",
+      "build": {
+        "context": "..",
+        "args": {
+          "SERVICE": "worker"
+        }
+      },
+      "environment": {
+        "MYSQL_DSN": "talko:${MYSQL_PASSWORD}@tcp(mysql:3306)/talko?parseTime=true&multiStatements=true&charset=utf8mb4&loc=UTC",
+        "APP_ENV": "staging",
+        "APP_ORIGIN": "http://localhost:5183",
+        "REVIEW_ORIGIN": "http://localhost:5184",
+        "HTTP_ADDR": "0.0.0.0:8080",
+        "REVIEW_ADDR": "0.0.0.0:8081",
+        "SMTP_ADDR": "mailpit:1025",
+        "SMTP_FROM": "noreply@talko.local",
+        "OUTBOX_WORKER": "disabled",
+        "WORKER_ADDR": "0.0.0.0:8085"
+      },
+      "depends_on": {
+        "migrate": {
+          "condition": "service_completed_successfully"
+        }
+      },
+      "restart": "unless-stopped",
+      "mem_limit": "512m"
+    },
+    "community-web": {
+      "image": "${IMAGE_PREFIX:-talko}/community-web:${RELEASE:-local}",
+      "build": {
+        "context": "..",
+        "dockerfile": "deploy/Dockerfile.web",
+        "args": {
+          "APP": "community"
+        }
+      },
+      "ports": [
+        "127.0.0.1:5183:80"
+      ],
+      "depends_on": [
+        "community"
+      ],
+      "restart": "unless-stopped"
+    },
+    "review-web": {
+      "image": "${IMAGE_PREFIX:-talko}/review-web:${RELEASE:-local}",
+      "build": {
+        "context": "..",
+        "dockerfile": "deploy/Dockerfile.web",
+        "args": {
+          "APP": "review"
+        }
+      },
+      "ports": [
+        "127.0.0.1:5184:80"
+      ],
+      "depends_on": [
+        "review"
+      ],
+      "restart": "unless-stopped"
+    },
+    "prometheus": {
+      "image": "prom/prometheus:v3.5.0",
+      "volumes": [
+        "./prometheus.yaml:/etc/prometheus/prometheus.yml:ro",
+        "./alerts.yaml:/etc/prometheus/alerts.yaml:ro",
+        "prometheus-data:/prometheus"
+      ],
+      "command": [
+        "--config.file=/etc/prometheus/prometheus.yml",
+        "--storage.tsdb.retention.time=7d",
+        "--storage.tsdb.retention.size=1GB"
+      ],
+      "ports": [
+        "127.0.0.1:9090:9090"
+      ],
+      "restart": "unless-stopped"
+    },
+    "grafana": {
+      "image": "grafana/grafana:12.1.0",
+      "environment": {
+        "GF_SECURITY_ADMIN_PASSWORD": "${GRAFANA_PASSWORD:?required}",
+        "GF_USERS_ALLOW_SIGN_UP": "false"
+      },
+      "volumes": [
+        "grafana-data:/var/lib/grafana",
+        "./grafana:/etc/grafana/provisioning:ro"
+      ],
+      "ports": [
+        "127.0.0.1:3000:3000"
+      ],
+      "restart": "unless-stopped"
+    },
+    "alertmanager": {
+      "image": "prom/alertmanager:v0.28.1",
+      "command": [
+        "--config.file=/etc/alertmanager/alertmanager.yml",
+        "--storage.path=/alertmanager"
+      ],
+      "volumes": [
+        "./alertmanager.yaml:/etc/alertmanager/alertmanager.yml:ro",
+        "alertmanager-data:/alertmanager"
+      ],
+      "ports": [
+        "127.0.0.1:9093:9093"
+      ],
+      "restart": "unless-stopped"
+    }
+  },
+  "volumes": {
+    "mysql-data": {},
+    "prometheus-data": {},
+    "grafana-data": {},
+    "alertmanager-data": {}
+  }
+}

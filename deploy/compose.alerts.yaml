@@ -1,0 +1,36 @@
+{
+  "services": {
+    "alertmanager": {
+      "volumes": [
+        "./alertmanager.feishu.yaml:/etc/alertmanager/alertmanager.yml:ro",
+        "alertmanager-data:/alertmanager"
+      ],
+      "secrets": [
+        "alert_token"
+      ]
+    },
+    "alertbridge": {
+      "image": "${IMAGE_PREFIX:-talko}/alertbridge:${RELEASE:-local}",
+      "build": {
+        "context": "..",
+        "args": {
+          "SERVICE": "alertbridge"
+        }
+      },
+      "environment": {
+        "FEISHU_WEBHOOK": "${FEISHU_WEBHOOK:?required}",
+        "FEISHU_SECRET": "${FEISHU_SECRET:?required}",
+        "ALERT_TOKEN_FILE": "/run/secrets/alert_token"
+      },
+      "secrets": [
+        "alert_token"
+      ],
+      "restart": "unless-stopped"
+    }
+  },
+  "secrets": {
+    "alert_token": {
+      "file": "${ALERT_TOKEN_FILE:?required}"
+    }
+  }
+}

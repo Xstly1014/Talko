@@ -1,0 +1,14 @@
+verified_at=2026-10-29T05:40:46Z
+isolated_database=talko_restore_20261029_054043_134
+canonical_dump_equal=true
+schema_version	5
+users	1
+posts	1
+revisions	1
+comments	3
+media	0	0
+outbox	11
+audit_log	5
+canonical_source_sha256=9cdb247a672959dc1df722d3853a287d77debc9ca6c53a40e6a061f097ea8f70
+canonical_restored_sha256=9cdb247a672959dc1df722d3853a287d77debc9ca6c53a40e6a061f097ea8f70
+Native WSL MySQL rehearsal only; Compose backup scripts not executed.

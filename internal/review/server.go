@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/Xstly1014/Talko/internal/moderation"
+	"github.com/Xstly1014/Talko/internal/observability"
 	"github.com/Xstly1014/Talko/internal/store"
 	"golang.org/x/crypto/bcrypt"
 	"io"
@@ -119,6 +120,12 @@ func (s *Server) auth(r *http.Request) (*Staff, error) {
 }
 func (s *Server) Routes() http.Handler {
 	m := http.NewServeMux()
+	met := &observability.HTTPMetrics{}
+	m.HandleFunc("GET /metrics", func(w http.ResponseWriter, r *http.Request) {
+		if observability.Serve(s.DB, w, r) {
+			met.Write(w)
+		}
+	})
 	add := func(p, role string, h handler) { m.HandleFunc(p, s.wrap(role, h)) }
 	add("GET /readyz", "public", s.ready)
 	add("POST /review-api/v1/auth/login", "public", s.login)
@@ -136,7 +143,7 @@ func (s *Server) Routes() http.Handler {
 	add("GET /review-api/v1/appeals", "risk", s.appeals)
 	add("POST /review-api/v1/appeals/{id}/resolve", "risk", s.resolveAppeal)
 	add("GET /review-api/v1/audit", "admin", s.audit)
-	return m
+	return met.Wrap(m)
 }
 func (s *Server) ready(w http.ResponseWriter, r *http.Request, u *Staff) error {
 	if e := s.DB.PingContext(r.Context()); e != nil {

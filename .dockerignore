@@ -1,5 +1,10 @@
 .git
 .tmp
-web/community/node_modules
-web/community/dist
+**/node_modules
+**/dist
 .env
+**/.env
+**/*.env
+backups
+data
+*.exe

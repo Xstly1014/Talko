@@ -18,6 +18,7 @@ import (
 )
 
 func main() {
+	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, nil)))
 	email := flag.String("bootstrap-email", "", "create one staff account, password from stdin")
 	role := flag.String("role", "reviewer", "admin/reviewer/risk")
 	flag.Parse()

@@ -1,0 +1,216 @@
+2026-10-29T05:57:03.315Z
+?   	github.com/Xstly1014/Talko/cmd/alertbridge	[no test files]
+?   	github.com/Xstly1014/Talko/cmd/community	[no test files]
+?   	github.com/Xstly1014/Talko/cmd/devmail	[no test files]
+?   	github.com/Xstly1014/Talko/cmd/moderate	[no test files]
+?   	github.com/Xstly1014/Talko/cmd/outbox	[no test files]
+?   	github.com/Xstly1014/Talko/cmd/review	[no test files]
+?   	github.com/Xstly1014/Talko/cmd/worker	[no test files]
+=== RUN   TestDeliveryContract
+--- PASS: TestDeliveryContract (0.00s)
+=== RUN   TestRecoveryAndRejections
+--- PASS: TestRecoveryAndRejections (0.00s)
+=== RUN   TestSignatureVector
+--- PASS: TestSignatureVector (0.00s)
+PASS
+ok  	github.com/Xstly1014/Talko/internal/alertbridge	0.666s
+=== RUN   TestLifecycleMySQL
+2026/10/29 13:56:56 INFO http request request_id=d5f7cb73a932c8fbddb21a46584ea438 method=POST route="POST /api/v1/auth/email-code" status=202 duration_ms=8.1493
+2026/10/29 13:56:56 INFO http request request_id=9e8bc1c44ca7f4d2cf65c1e272c7800e method=POST route="POST /api/v1/auth/register" status=201 duration_ms=160.9671
+2026/10/29 13:56:56 INFO http request request_id=17e5504af1a4a401306e5b21a12ae73f method=POST route="POST /api/v1/auth/email-code" status=202 duration_ms=7.6946
+2026/10/29 13:56:56 INFO http request request_id=f55bb4c274425ae7641683f12c4557dd method=POST route="POST /api/v1/auth/register" status=201 duration_ms=211.42749999999998
+=== RUN   TestLifecycleMySQL/create_idempotency_and_private_draft
+2026/10/29 13:56:56 INFO http request request_id=3f3bc785662b2591df41d0801deefa41 method=POST route="POST /api/v1/posts" status=201 duration_ms=6.7895
+2026/10/29 13:56:56 INFO http request request_id=45738fabc808a2e23a4679b78ff193ac method=POST route="POST /api/v1/posts" status=200 duration_ms=1.0531
+2026/10/29 13:56:56 INFO http request request_id=12dc7963ec3efa3b18cdc8ce927288ad method=GET route="GET /api/v1/posts/{id}" status=404 duration_ms=0.516
+2026/10/29 13:56:56 INFO http request request_id=fae8569896ca2b51ee05623cf0048f71 method=GET route="GET /api/v1/posts/{id}" status=404 duration_ms=1.0282
+=== RUN   TestLifecycleMySQL/follow_before_publication
+2026/10/29 13:56:56 INFO http request request_id=a64bfe2165132cd9037fb7ea7cf2ee19 method=PUT route="PUT /api/v1/users/{id}/follow" status=200 duration_ms=7.2062
+=== RUN   TestLifecycleMySQL/submit_and_self_review_denied
+2026/10/29 13:56:56 INFO http request request_id=0e771b5265d42b1093373959ceedbb34 method=POST route="POST /api/v1/posts/{id}/submit" status=202 duration_ms=7.751799999999999
+=== RUN   TestLifecycleMySQL/public_and_distributed_feed
+2026/10/29 13:56:57 INFO http request request_id=00423bd9a321f06a7fa9af8ab7fb3ee5 method=GET route="GET /api/v1/posts/{id}" status=200 duration_ms=1.0497
+2026/10/29 13:56:57 INFO http request request_id=051ec7e2deed7af115cda910385b9153 method=GET route="GET /api/v1/feed" status=200 duration_ms=2.1473999999999998
+=== RUN   TestLifecycleMySQL/pending_comment_visibility_and_moderation
+2026/10/29 13:56:57 INFO http request request_id=f0a7e839bcc67c7a408fc367b46669d8 method=POST route="POST /api/v1/posts/{id}/comments" status=202 duration_ms=8.232899999999999
+2026/10/29 13:56:57 INFO http request request_id=fa50b6aa807770f8811024bf2ed7f0f8 method=GET route="GET /api/v1/posts/{id}/comments" status=200 duration_ms=0.5136000000000001
+2026/10/29 13:56:57 INFO http request request_id=1b4346e2c051d5debc637a29e718719f method=GET route="GET /api/v1/posts/{id}/comments" status=200 duration_ms=1.0219
+=== RUN   TestLifecycleMySQL/withdraw_blocks_stale_decision
+2026/10/29 13:56:57 INFO http request request_id=0f1cfeb86f1d14eabcedaa78011633c9 method=PATCH route="PATCH /api/v1/posts/{id}/draft" status=200 duration_ms=8.193900000000001
+2026/10/29 13:56:57 INFO http request request_id=7342999b5299d8250b9709dfb94508fd method=POST route="POST /api/v1/posts/{id}/submit" status=202 duration_ms=8.6386
+2026/10/29 13:56:57 INFO http request request_id=e0226547b2c84c5084a18d1cef22dcbd method=POST route="POST /api/v1/posts/{id}/withdraw" status=200 duration_ms=7.114599999999999
+2026/10/29 13:56:57 INFO http request request_id=d2962920c1131fa49aca4fac3f2e0c1d method=GET route="GET /api/v1/posts/{id}" status=200 duration_ms=1.1882
+=== RUN   TestLifecycleMySQL/report_hide_and_filter_every_public_read
+2026/10/29 13:56:57 INFO http request request_id=5e69e6e75ea65a946f9d0cfe79afc052 method=POST route="POST /api/v1/posts/{id}/reports" status=201 duration_ms=7.744
+2026/10/29 13:56:57 INFO http request request_id=298742940f67f63d2beac5fca68b633b method=POST route="POST /api/v1/posts/{id}/reports" status=409 duration_ms=51.6607
+2026/10/29 13:56:57 INFO http request request_id=901554499d2dfe05e8f13f3af49ed9a4 method=GET route="GET /api/v1/posts/{id}" status=404 duration_ms=0.5146000000000001
+2026/10/29 13:56:57 INFO http request request_id=12f03aff4f2a58d67e5c28f8a0eab0f6 method=GET route="GET /api/v1/feed" status=200 duration_ms=1.0497
+2026/10/29 13:56:57 INFO http request request_id=fcc1d4a6c57ce8dd04556102b2ffb011 method=GET route="GET /api/v1/posts/{id}/comments" status=404 duration_ms=0.5169
+=== RUN   TestLifecycleMySQL/media_private_until_review_and_hidden_after_removal
+2026/10/29 13:56:57 INFO http request request_id=d14ab29910fb8277c0b8b5578954fc6d method=POST route="POST /api/v1/media" status=201 duration_ms=7.7454
+2026/10/29 13:56:57 INFO http request request_id=bfdf2a7c1c3823fde0395e3d42e76db0 method=GET route="GET /api/v1/media/{id}" status=404 duration_ms=1.6733
+2026/10/29 13:56:57 INFO http request request_id=c1b37047e09cf1b6391b482f30826135 method=POST route="POST /api/v1/posts" status=201 duration_ms=5.5882
+2026/10/29 13:56:57 INFO http request request_id=ceb21f9135584860c2c0f4385171bc05 method=POST route="POST /api/v1/posts/{id}/submit" status=202 duration_ms=6.079700000000001
+2026/10/29 13:56:57 INFO http request request_id=7afb03fc9457b5bc0be2e146f460ac8f method=GET route="GET /api/v1/media/{id}" status=200 duration_ms=1.0293999999999999
+2026/10/29 13:56:57 INFO http request request_id=b0d7c24dd3eaafbac6a1cb7dff0126df method=DELETE route="DELETE /api/v1/posts/{id}" status=200 duration_ms=7.2667
+2026/10/29 13:56:57 INFO http request request_id=d73d784799e68c7da429582c1ec4e9dc method=GET route="GET /api/v1/media/{id}" status=404 duration_ms=1.045
+=== RUN   TestLifecycleMySQL/expired_opportunity_hidden_and_risk_disclosure_present
+2026/10/29 13:56:57 INFO http request request_id=23ca36ff62cb7f00366830d6f97fff83 method=POST route="POST /api/v1/posts" status=201 duration_ms=7.2052000000000005
+2026/10/29 13:56:57 INFO http request request_id=eac85976503e99b22c3bd0bec8e6a3ea method=POST route="POST /api/v1/posts/{id}/submit" status=202 duration_ms=8.2263
+2026/10/29 13:56:57 INFO http request request_id=af671610f93eca45a95e8d15b509ddae method=GET route="GET /api/v1/posts/{id}" status=200 duration_ms=1.0935000000000001
+2026/10/29 13:56:57 INFO http request request_id=b090df08050aa03f6cadcda720fc00f8 method=GET route="GET /api/v1/posts/{id}" status=404 duration_ms=0.5166
+=== RUN   TestLifecycleMySQL/origin_and_unknown_fields
+2026/10/29 13:56:57 INFO http request request_id=589bf6f459042b0e0fb2b68c6a41a94c method=POST route="POST /api/v1/auth/login" status=403 duration_ms=0
+2026/10/29 13:56:57 INFO http request request_id=c133540943603753381470f4f7cfc335 method=POST route="POST /api/v1/auth/login" status=400 duration_ms=0
+--- PASS: TestLifecycleMySQL (1.12s)
+    --- PASS: TestLifecycleMySQL/create_idempotency_and_private_draft (0.01s)
+    --- PASS: TestLifecycleMySQL/follow_before_publication (0.01s)
+    --- PASS: TestLifecycleMySQL/submit_and_self_review_denied (0.44s)
+    --- PASS: TestLifecycleMySQL/public_and_distributed_feed (0.00s)
+    --- PASS: TestLifecycleMySQL/pending_comment_visibility_and_moderation (0.02s)
+    --- PASS: TestLifecycleMySQL/withdraw_blocks_stale_decision (0.03s)
+    --- PASS: TestLifecycleMySQL/report_hide_and_filter_every_public_read (0.07s)
+    --- PASS: TestLifecycleMySQL/media_private_until_review_and_hidden_after_removal (0.04s)
+    --- PASS: TestLifecycleMySQL/expired_opportunity_hidden_and_risk_disclosure_present (0.09s)
+    --- PASS: TestLifecycleMySQL/origin_and_unknown_fields (0.00s)
+=== RUN   TestDraftRules
+--- PASS: TestDraftRules (0.00s)
+PASS
+ok  	github.com/Xstly1014/Talko/internal/community	1.601s
+?   	github.com/Xstly1014/Talko/internal/moderation	[no test files]
+=== RUN   TestBoundedRouteAndStatus
+2026/10/29 13:56:58 INFO http request request_id="" method=GET route="GET /posts/{id}" status=503 duration_ms=0
+2026/10/29 13:56:58 INFO http request request_id="" method=GET route="GET /posts/{id}" status=503 duration_ms=0
+--- PASS: TestBoundedRouteAndStatus (0.02s)
+=== RUN   TestMetricsDatabaseFailure
+--- PASS: TestMetricsDatabaseFailure (0.00s)
+PASS
+ok  	github.com/Xstly1014/Talko/internal/observability	0.523s
+=== RUN   TestReviewBoundaryAndGovernance
+2026/10/29 13:56:59 INFO http request request_id=3d3cefd44e0afd3faf682d9285fdcd9a method=POST route="POST /review-api/v1/auth/login" status=200 duration_ms=154.0882
+2026/10/29 13:56:59 INFO http request request_id=52ccf480d2454f3fa65430cf42fa4318 method=POST route="POST /review-api/v1/auth/login" status=200 duration_ms=201.5261
+2026/10/29 13:57:00 INFO http request request_id=c0d11408ea5a189428466b7c38a1ce9f method=POST route="POST /review-api/v1/auth/login" status=200 duration_ms=197.6444
+=== RUN   TestReviewBoundaryAndGovernance/session_separation_and_role_authorization
+2026/10/29 13:57:00 INFO http request request_id=7aa9abd7bcc32d0da3597f6e461c5494 method=GET route="GET /review-api/v1/tasks" status=401 duration_ms=0
+2026/10/29 13:57:00 INFO http request request_id=c40d590d699dab0c177ee6f3a6961f3d method=GET route="GET /review-api/v1/reports" status=403 duration_ms=1.0877000000000001
+2026/10/29 13:57:00 INFO http request request_id=996e4cd68ef53b6b0a8949242a3a7414 method=GET route="GET /review-api/v1/audit" status=403 duration_ms=0.5382
+2026/10/29 13:57:00 INFO http request request_id=f06a89af257392b78e141ef180716826 method=GET route="GET /review-api/v1/audit" status=200 duration_ms=1.5617999999999999
+=== RUN   TestReviewBoundaryAndGovernance/claim_conflict_and_audited_decision
+2026/10/29 13:57:00 INFO http request request_id=eb0d9c4788778fafb16dddcf4c3939da method=POST route="POST /api/v1/posts" status=201 duration_ms=58.4352
+2026/10/29 13:57:00 INFO http request request_id=5ea0745b2c033658fae5e7e9ffb8b8db method=POST route="POST /api/v1/posts/{id}/submit" status=202 duration_ms=9.4298
+2026/10/29 13:57:00 INFO http request request_id=ed727bb313b207964ff0b95b44bfbbc1 method=POST route="POST /review-api/v1/tasks/{id}/decision" status=409 duration_ms=3.1029
+2026/10/29 13:57:00 INFO http request request_id=94772f796abd941ca71a8a2374e54f53 method=POST route="POST /review-api/v1/tasks/{id}/claim" status=200 duration_ms=57.38999999999999
+2026/10/29 13:57:00 INFO http request request_id=9acb58967a43cc96cb413e97702fcfdb method=POST route="POST /review-api/v1/tasks/{id}/claim" status=409 duration_ms=3.5644
+2026/10/29 13:57:00 INFO http request request_id=5e5cf3080de82e553d27379cd00f2705 method=POST route="POST /review-api/v1/tasks/{id}/decision" status=409 duration_ms=1.0384
+2026/10/29 13:57:00 INFO http request request_id=d34554338a29273a0c1b736e14d0d902 method=POST route="POST /review-api/v1/tasks/{id}/decision" status=200 duration_ms=10.9617
+2026/10/29 13:57:00 INFO http request request_id=1e4657116745b0bd43658cccf4af3f9a method=GET route="GET /api/v1/posts/{id}" status=200 duration_ms=48.1079
+=== RUN   TestReviewBoundaryAndGovernance/profile_changes_not_public_until_approved
+2026/10/29 13:57:00 INFO http request request_id=30902224387f77e88cfb9f929d1d38ba method=PATCH route="PATCH /api/v1/me/profile" status=202 duration_ms=8.319999999999999
+2026/10/29 13:57:00 INFO http request request_id=fa4c8c1afcebc4980473bba39b358a50 method=GET route="GET /api/v1/users/{id}" status=200 duration_ms=1.1144
+2026/10/29 13:57:00 INFO http request request_id=f2240794e3ddb2962a1e6db1e7c3da35 method=POST route="POST /review-api/v1/tasks/{id}/claim" status=200 duration_ms=55.9415
+2026/10/29 13:57:00 INFO http request request_id=2cd17efad36b71e6de03e69a46168c37 method=POST route="POST /review-api/v1/tasks/{id}/decision" status=200 duration_ms=52.0078
+2026/10/29 13:57:00 INFO http request request_id=2641221f10328757a50d9b710d3364ff method=GET route="GET /api/v1/users/{id}" status=200 duration_ms=1.0386
+=== RUN   TestReviewBoundaryAndGovernance/superseded_profile_version_cannot_publish
+2026/10/29 13:57:00 INFO http request request_id=743ff027838a1bd80fce70ff83f86334 method=PATCH route="PATCH /api/v1/me/profile" status=202 duration_ms=8.1828
+2026/10/29 13:57:00 INFO http request request_id=654ba4f25e078a41260872a1e6ebeb6a method=POST route="POST /review-api/v1/tasks/{id}/claim" status=200 duration_ms=48.6823
+2026/10/29 13:57:00 INFO http request request_id=1331bc9c5fe1ff1288887f1abf74cbf7 method=PATCH route="PATCH /api/v1/me/profile" status=202 duration_ms=56.9478
+2026/10/29 13:57:00 INFO http request request_id=fb9fb4709fba71d5f59795637ecf82ee method=POST route="POST /review-api/v1/tasks/{id}/decision" status=409 duration_ms=2.6828
+=== RUN   TestReviewBoundaryAndGovernance/comment_report_to_hide_closed_loop
+2026/10/29 13:57:00 INFO http request request_id=096d75fdd80aac5805657a7051b5bef4 method=POST route="POST /api/v1/posts/{id}/comments" status=202 duration_ms=7.2051
+2026/10/29 13:57:00 INFO http request request_id=3e38a6779d5267e3e455d9f4455188ec method=POST route="POST /review-api/v1/tasks/{id}/claim" status=200 duration_ms=52.1488
+2026/10/29 13:57:00 INFO http request request_id=ab231714d8d64ad423d774f48e793c64 method=POST route="POST /review-api/v1/tasks/{id}/decision" status=200 duration_ms=13.7836
+2026/10/29 13:57:00 INFO http request request_id=bf1ab039795078499a00b9a79dcf47e3 method=POST route="POST /api/v1/comments/{id}/reports" status=201 duration_ms=60.2093
+2026/10/29 13:57:00 INFO http request request_id=38c5e66f8bdac79d135122cc8b335d3d method=POST route="POST /api/v1/comments/{id}/reports" status=409 duration_ms=2.7415
+2026/10/29 13:57:00 INFO http request request_id=dd39254475bfdf278db1e2419e1fc47c method=POST route="POST /review-api/v1/reports/{id}/resolve" status=200 duration_ms=9.8267
+2026/10/29 13:57:00 INFO http request request_id=880f21f01ec9ab1555e7e76920e99565 method=GET route="GET /api/v1/posts/{id}/comments" status=200 duration_ms=0.919
+=== RUN   TestReviewBoundaryAndGovernance/report_evidence_is_immutable_revision
+2026/10/29 13:57:00 INFO http request request_id=f6bee3e48fa78890adbb635e900441de method=POST route="POST /api/v1/posts/{id}/reports" status=201 duration_ms=7.3917
+2026/10/29 13:57:00 INFO http request request_id=f0e2ee5934d878f89a2b0af02776a087 method=PATCH route="PATCH /api/v1/posts/{id}/draft" status=200 duration_ms=6.2078999999999995
+2026/10/29 13:57:00 INFO http request request_id=32cbd56a6a3e2f2de6bc710ba5fa590f method=POST route="POST /api/v1/posts/{id}/submit" status=202 duration_ms=8.2762
+2026/10/29 13:57:00 INFO http request request_id=e4813ed02bef7b3d58ab4f4af154d10d method=POST route="POST /review-api/v1/tasks/{id}/claim" status=200 duration_ms=49.603
+2026/10/29 13:57:01 INFO http request request_id=a887851db38e6ea22c691aae8ee0bbd4 method=POST route="POST /review-api/v1/tasks/{id}/decision" status=200 duration_ms=12.6484
+2026/10/29 13:57:01 INFO http request request_id=3b2b76a98bfb9982ba9c513634b57f27 method=GET route="GET /review-api/v1/reports/{id}" status=200 duration_ms=51.2501
+2026/10/29 13:57:01 INFO http request request_id=804a2eec0a3aeee93e1eeca9ea90bfb1 method=POST route="POST /review-api/v1/reports/{id}/resolve" status=200 duration_ms=9.9192
+=== RUN   TestReviewBoundaryAndGovernance/appeal_reopens_fresh_task_preserving_original_decision
+2026/10/29 13:57:01 INFO http request request_id=bad08c96125a31570cefc64e64e8c1ba method=POST route="POST /api/v1/posts" status=201 duration_ms=7.277200000000001
+2026/10/29 13:57:01 INFO http request request_id=9d6a4664c29b3b4d3d7f9f56db5d4154 method=POST route="POST /api/v1/posts/{id}/submit" status=202 duration_ms=8.934299999999999
+2026/10/29 13:57:01 INFO http request request_id=d4b525ae293c2351f2a12ebde332527d method=POST route="POST /review-api/v1/tasks/{id}/claim" status=200 duration_ms=50.2126
+2026/10/29 13:57:01 INFO http request request_id=50814c5737302298164fa1972df0304d method=POST route="POST /review-api/v1/tasks/{id}/decision" status=200 duration_ms=10.5025
+2026/10/29 13:57:01 INFO http request request_id=bd438f298b9b91183f9c8e68988334ee method=POST route="POST /api/v1/appeals" status=201 duration_ms=51.214999999999996
+2026/10/29 13:57:01 INFO http request request_id=3bd3395019f87a141075bc8876f295ca method=POST route="POST /review-api/v1/appeals/{id}/resolve" status=403 duration_ms=0.525
+2026/10/29 13:57:01 INFO http request request_id=80296d3e4b2345477f3a08a183ac36cb method=POST route="POST /review-api/v1/auth/login" status=200 duration_ms=199.3454
+2026/10/29 13:57:01 INFO http request request_id=bf5b32eebde70863bbdbf6aae5575fa8 method=POST route="POST /review-api/v1/appeals/{id}/resolve" status=200 duration_ms=8.0833
+2026/10/29 13:57:01 INFO http request request_id=d2aaeded8de5cc1fdc6669227a566def method=GET route="GET /api/v1/posts/{id}" status=404 duration_ms=0.524
+2026/10/29 13:57:01 INFO http request request_id=d121441fa8ca3bd9281d33f1d8ca7879 method=POST route="POST /review-api/v1/tasks/{id}/claim" status=200 duration_ms=7.798
+2026/10/29 13:57:01 INFO http request request_id=f597681ba9524de5de72a7e549cc5124 method=POST route="POST /review-api/v1/tasks/{id}/decision" status=200 duration_ms=109.6331
+2026/10/29 13:57:01 INFO http request request_id=820b98a68c8ee1ae94764f326cfcbdad method=GET route="GET /api/v1/posts/{id}" status=200 duration_ms=2.1262
+2026/10/29 13:57:01 INFO http request request_id=e9151cdb7a14137d39bc28359d4be684 method=GET route="GET /api/v1/me/appeals" status=200 duration_ms=0.5157
+2026/10/29 13:57:01 INFO http request request_id=d1914438591367cc66d59c0acd350b11 method=POST route="POST /review-api/v1/appeals/{id}/resolve" status=409 duration_ms=2.0758
+=== RUN   TestReviewBoundaryAndGovernance/superseded_content_cannot_reopen_on_appeal
+2026/10/29 13:57:01 INFO http request request_id=354d8861b9b072c41de1db7b14e3273f method=POST route="POST /api/v1/posts" status=201 duration_ms=6.5563
+2026/10/29 13:57:01 INFO http request request_id=a5107bfff178e86c4ba4fc5d2cb73dab method=POST route="POST /api/v1/posts/{id}/submit" status=202 duration_ms=8.956000000000001
+2026/10/29 13:57:01 INFO http request request_id=65318c8b4849b391d905859ee0549b17 method=POST route="POST /review-api/v1/tasks/{id}/claim" status=200 duration_ms=9.245700000000001
+2026/10/29 13:57:01 INFO http request request_id=d33115ba507795b901764d375d1da0cb method=POST route="POST /review-api/v1/tasks/{id}/decision" status=200 duration_ms=60.6464
+2026/10/29 13:57:01 INFO http request request_id=c4d120cf07c66136ced7c7d1f4081f99 method=PATCH route="PATCH /api/v1/posts/{id}/draft" status=200 duration_ms=57.7694
+2026/10/29 13:57:01 INFO http request request_id=09221e8348a111d13ba51058b28f7083 method=POST route="POST /api/v1/appeals" status=201 duration_ms=6.6995
+2026/10/29 13:57:01 INFO http request request_id=35aca80175c5ab931d530b500fde76d7 method=POST route="POST /review-api/v1/appeals/{id}/resolve" status=409 duration_ms=3.2378
+2026/10/29 13:57:01 INFO http request request_id=a655dd5792ecf3f4f2950c61a558bc72 method=POST route="POST /review-api/v1/appeals/{id}/resolve" status=200 duration_ms=12.9984
+=== RUN   TestReviewBoundaryAndGovernance/expired_claim_and_deleted_comment_cannot_decide
+2026/10/29 13:57:01 INFO http request request_id=b1b02e4e55a49ab2e7cd933247914074 method=POST route="POST /api/v1/posts/{id}/comments" status=202 duration_ms=10.308100000000001
+2026/10/29 13:57:01 INFO http request request_id=e5c3fbe6049315e3e23f582c3acf3004 method=POST route="POST /review-api/v1/tasks/{id}/claim" status=200 duration_ms=6.8193
+2026/10/29 13:57:01 INFO http request request_id=fc2e71a395083c16a338ee53efce9874 method=POST route="POST /review-api/v1/tasks/{id}/decision" status=409 duration_ms=1.5282
+2026/10/29 13:57:01 INFO http request request_id=f4c6d3dd758b55467fd845226e23e59b method=DELETE route="DELETE /api/v1/comments/{id}" status=200 duration_ms=6.6115
+2026/10/29 13:57:01 INFO http request request_id=7a8fec854c20f25f7a379c66f0e9dfbf method=GET route="GET /review-api/v1/tasks/{id}" status=200 duration_ms=0.7234
+=== RUN   TestReviewBoundaryAndGovernance/bounded_list_pagination
+2026/10/29 13:57:01 INFO http request request_id=a7444bc2481e66a8f3295ce423967b27 method=GET route="GET /review-api/v1/tasks" status=200 duration_ms=0.8608
+2026/10/29 13:57:01 INFO http request request_id=8e8d2614acb63f905bfd0c94023eb68f method=GET route="GET /review-api/v1/tasks" status=400 duration_ms=0.5164
+2026/10/29 13:57:01 INFO http request request_id=f1a6100554baf5b32b5fa4f1d0757097 method=GET route="GET /api/v1/notifications" status=400 duration_ms=0
+=== RUN   TestReviewBoundaryAndGovernance/expired_opportunity_cannot_approve
+2026/10/29 13:57:01 INFO http request request_id=c64ff0bd055b4394419d5a0e1425adcc method=POST route="POST /api/v1/posts" status=201 duration_ms=6.7661999999999995
+2026/10/29 13:57:01 INFO http request request_id=a16d989399d053efa1b6f8d397bb53cb method=POST route="POST /api/v1/posts/{id}/submit" status=202 duration_ms=10.261
+2026/10/29 13:57:01 INFO http request request_id=341a00b01e9aa2a12c5da63c9b8a82db method=POST route="POST /review-api/v1/tasks/{id}/claim" status=200 duration_ms=17.875700000000002
+2026/10/29 13:57:01 INFO http request request_id=e831a78cf432d441acb121d906aa9bcc method=POST route="POST /review-api/v1/tasks/{id}/decision" status=409 duration_ms=3.6831
+2026/10/29 13:57:01 INFO http request request_id=afea688864b90f915fda5e66633e16dc method=POST route="POST /review-api/v1/tasks/{id}/decision" status=200 duration_ms=59.5957
+=== RUN   TestReviewBoundaryAndGovernance/deleting_parent_cancels_pending_comment_tasks
+2026/10/29 13:57:01 INFO http request request_id=41ba9e4c2d243d599717a264d7405b78 method=POST route="POST /api/v1/posts/{id}/comments" status=202 duration_ms=7.8485
+2026/10/29 13:57:02 INFO http request request_id=fc81b5b4a75fafa7962e563be1790967 method=DELETE route="DELETE /api/v1/posts/{id}" status=200 duration_ms=59.7021
+2026/10/29 13:57:02 INFO http request request_id=f50f80c2e2b6d93175aa7e61a94b2415 method=GET route="GET /review-api/v1/tasks/{id}" status=200 duration_ms=0.5149
+=== RUN   TestReviewBoundaryAndGovernance/disabled_staff_session_revoked_immediately
+2026/10/29 13:57:02 INFO http request request_id=2ab84b2af6cc21d236979a77f36ce9ca method=GET route="GET /review-api/v1/me" status=200 duration_ms=0.5218999999999999
+2026/10/29 13:57:02 INFO http request request_id=9be437ef9589f0d2fc36ec292af5c7a2 method=GET route="GET /review-api/v1/tasks" status=401 duration_ms=0.5847
+=== RUN   TestReviewBoundaryAndGovernance/foreign_origin_denied
+2026/10/29 13:57:02 INFO http request request_id=55e8f0885b52fc5d76190deac6f4cdd5 method=POST route="POST /review-api/v1/auth/login" status=403 duration_ms=0
+--- PASS: TestReviewBoundaryAndGovernance (2.77s)
+    --- PASS: TestReviewBoundaryAndGovernance/session_separation_and_role_authorization (0.00s)
+    --- PASS: TestReviewBoundaryAndGovernance/claim_conflict_and_audited_decision (0.19s)
+    --- PASS: TestReviewBoundaryAndGovernance/profile_changes_not_public_until_approved (0.12s)
+    --- PASS: TestReviewBoundaryAndGovernance/superseded_profile_version_cannot_publish (0.12s)
+    --- PASS: TestReviewBoundaryAndGovernance/comment_report_to_hide_closed_loop (0.15s)
+    --- PASS: TestReviewBoundaryAndGovernance/report_evidence_is_immutable_revision (0.15s)
+    --- PASS: TestReviewBoundaryAndGovernance/appeal_reopens_fresh_task_preserving_original_decision (0.61s)
+    --- PASS: TestReviewBoundaryAndGovernance/superseded_content_cannot_reopen_on_appeal (0.17s)
+    --- PASS: TestReviewBoundaryAndGovernance/expired_claim_and_deleted_comment_cannot_decide (0.03s)
+    --- PASS: TestReviewBoundaryAndGovernance/bounded_list_pagination (0.00s)
+    --- PASS: TestReviewBoundaryAndGovernance/expired_opportunity_cannot_approve (0.11s)
+    --- PASS: TestReviewBoundaryAndGovernance/deleting_parent_cancels_pending_comment_tasks (0.07s)
+    --- PASS: TestReviewBoundaryAndGovernance/disabled_staff_session_revoked_immediately (0.01s)
+    --- PASS: TestReviewBoundaryAndGovernance/foreign_origin_denied (0.00s)
+PASS
+ok  	github.com/Xstly1014/Talko/internal/review	3.289s
+?   	github.com/Xstly1014/Talko/internal/store	[no test files]
+=== RUN   TestDelayedLifecycleEventsRespectCurrentPublication
+--- PASS: TestDelayedLifecycleEventsRespectCurrentPublication (0.16s)
+=== RUN   TestPoisonIsolationAndIdempotency
+2026/10/29 13:57:03 ERROR outbox delivery failed event_id=5ad96471bc6c587e972d80023ca237af kind=unsupported attempt=1 dead=false
+2026/10/29 13:57:03 ERROR outbox delivery failed event_id=5ad96471bc6c587e972d80023ca237af kind=unsupported attempt=2 dead=false
+2026/10/29 13:57:03 ERROR outbox delivery failed event_id=5ad96471bc6c587e972d80023ca237af kind=unsupported attempt=3 dead=false
+2026/10/29 13:57:03 ERROR outbox delivery failed event_id=5ad96471bc6c587e972d80023ca237af kind=unsupported attempt=4 dead=false
+2026/10/29 13:57:03 ERROR outbox delivery failed event_id=5ad96471bc6c587e972d80023ca237af kind=unsupported attempt=5 dead=false
+2026/10/29 13:57:03 ERROR outbox delivery failed event_id=5ad96471bc6c587e972d80023ca237af kind=unsupported attempt=6 dead=false
+2026/10/29 13:57:03 ERROR outbox delivery failed event_id=5ad96471bc6c587e972d80023ca237af kind=unsupported attempt=7 dead=false
+2026/10/29 13:57:03 ERROR outbox delivery failed event_id=5ad96471bc6c587e972d80023ca237af kind=unsupported attempt=8 dead=true
+--- PASS: TestPoisonIsolationAndIdempotency (0.26s)
+PASS
+ok  	github.com/Xstly1014/Talko/internal/worker	0.853s
+
+exit=0

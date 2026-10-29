@@ -1,5 +1,8 @@
 name: community-ci
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+  workflow_call:
 jobs:
   backend:
     runs-on: ubuntu-latest
@@ -19,7 +22,7 @@ jobs:
         with:
           go-version-file: go.mod
           cache: true
-      - run: go test -count=1 -v ./...
+      - run: go test -p=1 -count=1 -v ./...
       - run: go vet ./...
   frontend:
     strategy:
@@ -37,3 +40,24 @@ jobs:
         working-directory: web/${{ matrix.app }}
       - run: npm run build
         working-directory: web/${{ matrix.app }}
+
+  infrastructure:
+    needs: [backend, frontend]
+    runs-on: ubuntu-latest
+    env:
+      MYSQL_PASSWORD: ci_application_only
+      MYSQL_ROOT_PASSWORD: ci_root_only
+      GRAFANA_PASSWORD: ci_grafana_only
+    steps:
+      - uses: actions/checkout@v4
+      - name: Shell syntax
+        run: for script in deploy/bin/*.sh scripts/check-runtime.sh; do bash -n "$script"; done
+      - name: Containers, scrape recovery and restore rehearsal
+        run: bash deploy/bin/acceptance.sh
+        timeout-minutes: 20
+      - name: Stack diagnostics
+        if: always()
+        run: docker compose -f deploy/compose.yaml logs --no-color --tail 150
+      - name: Remove isolated CI stack
+        if: always()
+        run: docker compose -f deploy/compose.yaml down -v
